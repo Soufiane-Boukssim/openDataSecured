@@ -6,6 +6,7 @@ import { HomeComponent } from './components/home/home.component';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { DataSetComponent } from './components/data-set/data-set.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ChatBotComponent } from './components/chat-bot/chat-bot.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
@@ -18,14 +19,17 @@ export const routes: Routes = [
         path: '',
         component: MainComponent,
         canActivate: [AuthGuard], // ✅ PROTECTION
+        // data: { breadcrumb: 'Admin' },  // <-- ici
         children: [
           {
             path: '',
             component: ContentComponent,
+            data: { breadcrumb: 'Admin' },  // <-- ici
             children: [
-              { path: 'home', component: HomeComponent },
-              { path: 'categories', component: CategoriesComponent },
-              { path: 'donnees', component: DataSetComponent },
+              { path: 'home', component: HomeComponent, data: { breadcrumb: 'Home' }  },
+              { path: 'categories', component: CategoriesComponent, data: { breadcrumb: 'Categories' } },
+              { path: 'donnees', component: DataSetComponent, data: { breadcrumb: 'Données' }  },
+              { path: 'chatBot', component: ChatBotComponent, data: { breadcrumb: 'chatBot' }  },
               { path: '', redirectTo: 'home', pathMatch: 'full' }
             ]
           }
