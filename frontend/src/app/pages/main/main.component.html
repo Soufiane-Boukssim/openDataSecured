@@ -1,16 +1,10 @@
-<div class="container-fluid">
-    <div class="row">
-
-      <!-- Sidebar : 3/12 de la largeur -->
-      <div class="col-3 p-0">
-        <app-side-bar></app-side-bar>
-      </div>
-  
-      <!-- Contenu : 9/12 de la largeur -->
-      <div class="col-9">
-        <router-outlet></router-outlet>
-      </div>
-
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-3 p-0">
+      <app-side-bar></app-side-bar>
+    </div>
+    <div class="col-9 h-100 overflow-auto">
+      <router-outlet></router-outlet>
     </div>
   </div>
-  
+</div>

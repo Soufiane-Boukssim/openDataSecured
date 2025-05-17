@@ -40,13 +40,6 @@ public class DataSetThemeController {
         return ResponseEntity.ok(savedTheme);
     }
 
-    @GetMapping("/upload/image/{fileName}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String fileName) throws IOException {
-        byte[] image = dataSetThemeService.getImage(fileName);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .body(image);
-    }
 
     @PutMapping(value = "/update/byId/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<DataSetThemeResponse> updateTheme(
@@ -57,6 +50,15 @@ public class DataSetThemeController {
         DataSetThemeResponse updatedThemeResponse = dataSetThemeService.updateThemeById(id, name, description, icon);
         return ResponseEntity.ok(updatedThemeResponse);
     }
+
+    @GetMapping("/upload/image/{fileName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String fileName) throws IOException {
+        byte[] image = dataSetThemeService.getImage(fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(image);
+    }
+
 
     @DeleteMapping("/delete/byId/{id}")
     public Boolean deleteTheme(@PathVariable UUID id) {

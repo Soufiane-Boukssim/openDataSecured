@@ -8,7 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  if (token && req.url !== environment.loginUrl) {
+  if (token && req.url !== environment.apiUrl+`/login`) {
     const cloned = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`),
     });

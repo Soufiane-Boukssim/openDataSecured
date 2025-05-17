@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CategoriesComponent } from './categories.component';
+import { dataSetThemeComponent } from './dataSetTheme.component';
 
-describe('CategoriesComponent', () => {
-  let component: CategoriesComponent;
-  let fixture: ComponentFixture<CategoriesComponent>;
+describe('dataSetThemeComponent', () => {
+  let component: dataSetThemeComponent;
+  let fixture: ComponentFixture<dataSetThemeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CategoriesComponent]
+      imports: [dataSetThemeComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CategoriesComponent);
+    fixture = TestBed.createComponent(dataSetThemeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

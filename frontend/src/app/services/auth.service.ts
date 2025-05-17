@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
@@ -8,13 +8,13 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private loginApiUrl = environment.loginUrl;  
+  private apiUrl = environment.apiUrl;  
 
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string): Observable<any> {
     const body = { email, password };
-    return this.http.post<any>(`${this.loginApiUrl}`, body);
+    return this.http.post<any>(`${this.apiUrl}/login`, body);
   }
 
   setToken(token: string): void {

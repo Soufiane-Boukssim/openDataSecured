@@ -1,90 +1,137 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark vh-100">
+<!-- Sidebar grand écran -->
+<div class="d-none d-md-flex flex-column flex-shrink-0 p-3 text-white bg-dark vh-100">
   <a routerLink="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-    <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-    <span class="fs-4">Sidebar</span>
+    <img src="../../../assets/images/logo.jpg" alt="Logo" width="40" height="40" class="me-2 rounded-circle border border-white">
+    <span class="fs-4 fw-bold">Admin Dashboard</span>
   </a>
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
-    <li class="nav-item">
-      <a routerLink="/admin/home" routerLinkActive="active" class="nav-link text-white" aria-current="page">
-        <i class="bi bi-house-door me-2"></i>
-        Home
+    <li>
+      <a routerLink="/admin/home" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-house-door me-2"></i> Home
       </a>
     </li>
     <li>
-      <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link text-white">
-        <i class="bi bi-tags me-2"></i>
-        Categories
+      <a routerLink="/admin/dataSetThemes" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-tags me-2"></i> Themes
       </a>
     </li>
+
+
+
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed text-white"
+      <button class="btn btn-toggle text-white"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#producteurs-collapse"
-              aria-expanded="false"
-              aria-controls="producteurs-collapse">
-        Producteurs
+              id="toggleProducteurs"
+              aria-expanded="false">
+        <i class="bi bi-folder me-2"></i> Producteurs
       </button>
-      <div class="collapse" id="producteurs-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li>
-            <a routerLink="/admin/producteurs/organisation" routerLinkActive="active" class="nav-link text-white">
-              <i class="bi bi-building me-2"></i>
-              Organisation
-            </a>
-          </li>
-          <li>
-            <a routerLink="/admin/producteurs/member" routerLinkActive="active" class="nav-link text-white">
-              <i class="bi bi-people me-2"></i>
-              Member
-            </a>
-          </li>
-        </ul>
-      </div>
+      
+    <div class="collapse ms-4" id="producteurs-collapse">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a
+            routerLink="/admin/producteurs/organisations"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-link text-white d-flex align-items-center"
+          >
+            <i class="bi bi-building me-2"></i> Organisations
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            routerLink="/admin/producteurs/members"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-link text-white d-flex align-items-center"
+          >
+            <i class="bi bi-people me-2"></i> Membres
+          </a>
+        </li>
+      </ul>
+    </div>
+
+
+
     </li>
 
-
-
-
-
-
-
-
+    
+    
+    
     <li>
       <a routerLink="/admin/donnees" routerLinkActive="active" class="nav-link text-white">
-        <i class="bi bi-bar-chart me-2"></i>
-        Données
+        <i class="bi bi-bar-chart me-2"></i> Données
       </a>
     </li>
-
     <li>
       <a routerLink="/admin/chatBot" routerLinkActive="active" class="nav-link text-white">
-        <i class="bi bi-robot me-2"></i>
-        ChatBot
+        <i class="bi bi-robot me-2"></i> ChatBot
       </a>
     </li>
   </ul>
-
-
-
-
-
-
-
-
-
-  <hr>
+  <hr class="mt-auto">
   <div class="dropdown">
-    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-      <img src="assets/images/admin.png" alt="Profil admin" width="32" height="32" class="rounded-circle me-2">
-      <strong>mdo</strong>
+    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+       data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="assets/images/admin.png" alt="" width="32" height="32" class="rounded-circle me-2">
+      <strong>Boukssim Soufiane</strong>
     </a>
-    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-      <li><a class="dropdown-item" href="#">New project...</a></li>
-      <li><a class="dropdown-item" href="#">Settings</a></li>
+    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
       <li><a class="dropdown-item" href="#">Profile</a></li>
-      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="#">Sign out</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Sidebar petit écran -->
+<div class="d-flex d-md-none flex-column flex-shrink-0 p-3 text-white bg-dark vh-100">
+  <a routerLink="/" class="d-flex align-items-center mb-3 text-white text-decoration-none justify-content-center">
+    <img src="../../../assets/images/logo.jpg" alt="Logo Mobile" width="40" height="40" class="rounded-circle border border-white">
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column mb-auto text-center">
+    <li>
+      <a routerLink="/admin/home" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-house-door fs-5"></i>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/dataSetThemes" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-tags fs-5"></i>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/producteurs/organisations" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-building fs-5"></i>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/producteurs/members" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-people fs-5"></i>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/donnees" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-bar-chart fs-5"></i>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/chatBot" routerLinkActive="active" class="nav-link text-white">
+        <i class="bi bi-robot fs-5"></i>
+      </a>
+    </li>
+  </ul>
+  <hr class="mt-auto">
+
+  <!-- Dropdown image profil seulement (mobile) -->
+  <div class="dropdown text-center">
+    <a href="#" class="d-block link-light text-decoration-none dropdown-toggle"
+       id="dropdownUserMobile" data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="assets/images/admin.png" alt="Profil" width="32" height="32" class="rounded-circle">
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMobile">
+      <li><a class="dropdown-item" href="#">Profile</a></li>
       <li><a class="dropdown-item" href="#">Sign out</a></li>
     </ul>
   </div>

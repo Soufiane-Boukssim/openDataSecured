@@ -1,0 +1,190 @@
+<div class="container mt-4">
+  <h2>Liste des Organisations</h2>
+
+  <div class="d-flex justify-content-end mb-3">
+    <input
+      type="search"
+      class="form-control w-auto"
+      placeholder="Rechercher une organisation..."
+      [(ngModel)]="searchTerm"
+      aria-label="Recherche par nom"
+    />
+  </div>
+
+  <div class="d-flex justify-content-start mb-3">
+    <button type="button" class="btn btn-success" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Ajouter une organisation
+    </button>
+  </div>
+
+  <div class="modal fade" id="addOrganisationModal" tabindex="-1" aria-labelledby="addOrganisationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form (ngSubmit)="addOrganisation()" #addForm="ngForm">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="addOrganisationModalLabel">Ajouter une nouvelle Organisation</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Nom</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="newOrganisation.name"
+                name="name"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="newOrganisation.description"
+                name="description"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Logo (fichier)</label>
+              <input
+                type="file"
+                class="form-control"
+                (change)="onAddFileSelected($event)"
+                accept="image/*"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success" [disabled]="addForm.invalid">Ajouter</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-custom col-xl-4" *ngFor="let org of filteredOrganisations">
+      <div class="card mb-3 shadow-sm">
+        <img [src]="org.iconPath" class="card-img-top" alt="{{org.name}}" *ngIf="org.iconPath" style="height: 150px; object-fit: contain; background-color: #f8f9fa; padding: 1rem;">
+        <div class="card-img-top d-flex align-items-center justify-content-center" *ngIf="!org.iconPath" style="height: 150px; background-color: #f8f9fa; padding: 1rem;">
+          <i class="bi bi-building fs-1 text-secondary"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ org.name }}</h5>
+          <p class="card-text">{{ org.description }}</p>
+          <small class="text-muted d-block">Créé par {{ org.createdBy }}</small>
+          <small class="text-muted d-block">le {{ org.createdOn | date:'short' }}</small>
+          <ng-container *ngIf="org.updatedBy && org.updatedOn; else notModified">
+            <small class="text-muted d-block">Modifié par {{ org.updatedBy }}</small>
+            <small class="text-muted d-block">le {{ org.updatedOn | date:'short' }}</small>
+          </ng-container>
+          <ng-template #notModified>
+            <small class="text-muted d-block">Pas encore modifié</small>
+          </ng-template>
+
+
+          <div class="mt-3 d-flex justify-content-between">
+            <button type="button" class="btn btn-primary btn-sm" (click)="viewOrganisation(org.uuid)">
+              <i class="bi bi-eye"></i> View
+            </button>
+            <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(org)">
+              <i class="bi bi-pencil-square"></i> Update
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" (click)="deleteOrganisation(org.uuid)">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmation de suppression</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Voulez-vous vraiment supprimer cette organisation ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">Supprimer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="viewOrganisationModal" tabindex="-1" aria-labelledby="viewOrganisationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="viewOrganisationModalLabel">Détails de l'organisation</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedOrganisation">
+          <div class="text-center mb-4">
+            <img
+              [src]="selectedOrganisation.iconPath"
+              *ngIf="selectedOrganisation.iconPath"
+              class="img-fluid rounded shadow-sm"
+              style="max-height: 150px; object-fit: contain;"
+              alt="Logo de l'organisation"
+            />
+            <i
+              *ngIf="!selectedOrganisation.iconPath"
+              class="bi bi-building fs-1 text-secondary"
+            ></i>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Nom :</strong> {{ selectedOrganisation.name }}</li>
+            <li class="list-group-item"><strong>Description :</strong><br />{{ selectedOrganisation.description }}</li>
+            <li class="list-group-item"><strong>Créé par :</strong> {{ selectedOrganisation.createdBy }}</li>
+            <li class="list-group-item"><strong>Date de création :</strong> {{ selectedOrganisation.createdOn | date:'fullDate' }}</li>
+            <li class="list-group-item"><strong>Modifié par :</strong> {{ selectedOrganisation.updatedBy }}</li>
+            <li class="list-group-item"><strong>Date de modification :</strong> {{ selectedOrganisation.updatedOn | date:'fullDate' }}</li>
+            <li class="list-group-item"><strong>UUID :</strong><br /><code>{{ selectedOrganisation.uuid }}</code></li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="updateOrganisationModal" tabindex="-1" aria-labelledby="updateOrganisationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form (ngSubmit)="updateOrganisation()" #updateForm="ngForm">
+          <div class="modal-header bg-warning text-dark">
+            <h5 class="modal-title" id="updateOrganisationModalLabel">Modifier l'organisation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body" *ngIf="selectedOrganisation">
+            <div class="mb-3">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedOrganisation.name" name="name" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" [(ngModel)]="selectedOrganisation.description" name="description" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Logo (fichier)</label>
+              <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success" [disabled]="updateForm.invalid">Enregistrer</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

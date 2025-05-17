@@ -11,6 +11,7 @@ import com.soufiane.open_data.repositories.DataProviderOrganisationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -116,6 +117,9 @@ public class DataProviderOrganisationServiceImplementation implements DataProvid
             dataProviderOrganisation.setIconPath(UPLOAD_DIR+'/'+uniqueFileName);
             dataProviderOrganisation.setIcon(imageUrl+'/'+uniqueFileName);
         }
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        dataProviderOrganisation.setUpdatedBy(email);
+
         dataProviderOrganisation= dataProviderOrganisationRepository.save(dataProviderOrganisation);
         return dataProviderOrganisationMapper.convertToResponse(dataProviderOrganisation);
     }
@@ -220,6 +224,10 @@ public class DataProviderOrganisationServiceImplementation implements DataProvid
         provider.setName(name.trim());
         provider.setDescription(description.trim());
         String uniqueFileName = saveFileToDisk(file,name.trim());
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        provider.setCreatedBy(email);
+
         provider.setIconData(file.getBytes());
         provider.setIcon(imageUrl+'/'+name+ extension);
         provider.setIconPath(UPLOAD_DIR+'/'+name+ extension);

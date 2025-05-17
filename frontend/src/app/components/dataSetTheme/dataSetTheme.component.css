@@ -1,0 +1,42 @@
+.card-img-top {
+  height: 150px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+/* Par défaut (mobile): 1 colonne */
+.col-custom {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+/* Dès 800px: 2 colonnes */
+@media (min-width: 800px) {
+  .col-custom {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Dès 1200px: 3 colonnes */
+@media (min-width: 1200px) {
+  .col-custom {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+}
+
+/* Style pour la barre de recherche */
+input[type="search"] {
+  max-width: 300px;
+  border-radius: 25px;
+  padding-left: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+input[type="search"]:focus {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+  border-color: #007bff;
+  outline: none;
+}
