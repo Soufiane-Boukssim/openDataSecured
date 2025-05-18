@@ -6,6 +6,7 @@ import com.soufiane.open_data.mappers.DataProviderOrganisationMemberMapper;
 import com.soufiane.open_data.repositories.DataProviderOrganisationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
     public DataProviderOrganisationMemberResponse saveDataProviderMember(String firstName, String lastName, String email) {
         validateProviderMemberInputs(firstName, lastName, email);
         validateEmailSyntax(email);
-        checkIfProviderExists(firstName, lastName, email);
+        checkIfProviderExists0(firstName, lastName, email);
         DataProviderOrganisationMember dataProviderOrganisationMember = createDataProviderOrganisationMemberObject(firstName, lastName, email);
         dataProviderOrganisationMember= dataProviderOrganisationMemberRepository.save(dataProviderOrganisationMember);
         return dataProviderOrganisationMemberMapper.convertToResponse(dataProviderOrganisationMember);
@@ -88,7 +89,7 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
     public DataProviderOrganisationMemberResponse updateDataProviderMember(UUID uuid, String firstName, String lastName, String email) {
 //        validateProviderMemberInputs(firstName, lastName, email);
 //        validateEmailSyntax(email);
-        checkIfProviderExists(firstName, lastName, email);
+        checkIfProviderExists(firstName, lastName, email,uuid);
         DataProviderOrganisationMember dataProviderOrganisationMember= findDataProviderMemberById(uuid);
         if (dataProviderOrganisationMember!=null){
             if(firstName!=null)
@@ -97,6 +98,7 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
                 dataProviderOrganisationMember.setLastName(lastName);
             if(email!=null)
                 dataProviderOrganisationMember.setEmail(email);
+            dataProviderOrganisationMember.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             dataProviderOrganisationMember= dataProviderOrganisationMemberRepository.save(dataProviderOrganisationMember);
             return dataProviderOrganisationMemberMapper.convertToResponse(dataProviderOrganisationMember);
         }
@@ -136,7 +138,24 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
 
 
 
-    private void checkIfProviderExists(String firstName, String lastName, String email) {
+    private void checkIfProviderExists(String firstName, String lastName, String email, UUID id) {
+        boolean nameExists = dataProviderOrganisationMemberRepository
+                .findByFirstNameAndLastNameAndDeletedFalseAndUuidNot(firstName, lastName,id) != null;
+
+        boolean emailExists = dataProviderOrganisationMemberRepository
+                .findByEmailAndDeletedFalseAndUuidNot(email,id) != null;
+
+        if (nameExists && emailExists) {
+            throw new IllegalArgumentException("Erreur(s): Un provider avec ce nom existe et cet email existe déjà.");
+        } else if (nameExists) {
+            throw new IllegalArgumentException("Erreur(s): Un provider avec ce nom existe.");
+        } else if (emailExists) {
+            throw new IllegalArgumentException("Erreur(s): Un provider avec cet email existe déjà.");
+        }
+    }
+
+
+    private void checkIfProviderExists0(String firstName, String lastName, String email) {
         boolean nameExists = dataProviderOrganisationMemberRepository
                 .findByFirstNameAndLastNameAndDeletedFalse(firstName, lastName) != null;
 
@@ -151,6 +170,7 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
             throw new IllegalArgumentException("Erreur(s): Un provider avec cet email existe déjà.");
         }
     }
+
 
 //    private void findMember(String firstName, String lastName, String email) {
 //        boolean nameExists = dataProviderOrganisationMemberRepository
@@ -175,6 +195,7 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
         dataProviderOrganisation.setFirstName(firstName.trim());
         dataProviderOrganisation.setLastName(lastName.trim());
         dataProviderOrganisation.setEmail(email.trim());
+        dataProviderOrganisation.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         return dataProviderOrganisation;
     }
 

@@ -1,1 +1,208 @@
-<p>data-provider-member works!</p>
+<div class="container mt-4">
+  <h2>Liste des Membres</h2>
+
+  <div class="d-flex justify-content-end mb-3">
+    <input
+      type="search"
+      class="form-control w-auto"
+      placeholder="Rechercher un membre par email..."
+      [(ngModel)]="searchTerm"
+      aria-label="Recherche par email"
+    />
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-xl-4" *ngFor="let member of filteredMembers">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ member.firstName }} {{ member.lastName }}</h5>
+          <p class="card-text">{{ member.email }}</p>
+
+
+          <small class="text-muted d-block" *ngIf="member.dataProviderOrganisation; else noOrg">
+            Organisation :
+              <a [routerLink]="['/admin/producteurs/organisations']">
+              <!-- <a [routerLink]="['/admin/producteurs/organisations', member.dataProviderOrganisation.uuid]"> -->
+              {{ member.dataProviderOrganisation.name }}
+            </a>
+          </small>
+          <ng-template #noOrg>
+            <small class="text-muted d-block">
+              Organisation : <i>non assignée</i>
+            </small>
+          </ng-template>
+
+
+          <small class="text-muted d-block">
+            Créé par {{ member.createdBy }}
+          </small>
+          <small class="text-muted d-block">
+            le {{ member.createdOn | date:'short' }}
+          </small>
+
+          <ng-container *ngIf="member.updatedBy && member.updatedOn; else notModified">
+            <small class="text-muted d-block">
+              Modifié par {{ member.updatedBy }}
+            </small>
+            <small class="text-muted d-block">
+              le {{ member.updatedOn | date:'short' }}
+            </small>
+          </ng-container>
+          <ng-template #notModified>
+            <small class="text-muted d-block">Pas encore modifié</small>
+          </ng-template>
+
+          <div class="mt-3 d-flex justify-content-between">
+            <button type="button" class="btn btn-primary btn-sm" (click)="viewMember(member.uuid)">
+              <i class="bi bi-eye"></i> Voir
+            </button>
+            <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(member)">
+              <i class="bi bi-pencil-square"></i> Update
+            </button>
+
+            <button type="button" class="btn btn-danger btn-sm" (click)="askDeleteMember(member.uuid)">
+              <i class="bi bi-trash"></i> Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel">Détails du Membre</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedMember">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <strong>Nom :</strong> {{ selectedMember.lastName }}
+          </li>
+          <li class="list-group-item">
+            <strong>Prénom :</strong>{{ selectedMember.firstName }} 
+          </li>
+          <li class="list-group-item">
+            <strong>Email :</strong> {{ selectedMember.email }}
+          </li>
+
+          <li class="list-group-item" *ngIf="selectedMember.dataProviderOrganisation?.name; else noSelectedOrg">
+            <strong>Organisation :</strong> {{ selectedMember.dataProviderOrganisation.name }}
+          </li>
+          <ng-template #noSelectedOrg>
+            <li class="list-group-item">
+              <strong>Organisation :</strong> <i>non assignée</i>
+            </li>
+          </ng-template>
+
+
+
+          <li class="list-group-item">
+            <strong>Créé par :</strong> {{ selectedMember.createdBy }}
+          </li>
+          <li class="list-group-item">
+            <strong>Date de création :</strong> {{ selectedMember.createdOn | date:'fullDate' }}
+          </li>
+          <li class="list-group-item">
+            <strong>Modifié par :</strong> {{ selectedMember.updatedBy }}
+          </li>
+          <li class="list-group-item">
+            <strong>Date de modification :</strong> {{ selectedMember.updatedOn | date:'fullDate' }}
+          </li>
+          <li class="list-group-item">
+            <strong>UUID :</strong> <code>{{ selectedMember.uuid }}</code>
+          </li>
+
+        </ul>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmation de suppression</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        Voulez-vous vraiment supprimer ce membre ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addMemberModalLabel">Ajouter un nouveau membre</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <form #addForm="ngForm" (ngSubmit)="submitAdd()">
+          <div class="mb-3">
+            <label for="firstName" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" [(ngModel)]="newMember.firstName" required>
+          </div>
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" [(ngModel)]="newMember.lastName" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" [(ngModel)]="newMember.email" required email>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="addForm.invalid">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateMemberModal" tabindex="-1" aria-labelledby="updateMemberModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateMemberModalLabel">Modifier le membre</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedMember">
+        <form #updateForm="ngForm" (ngSubmit)="submitUpdate()">
+          <div class="mb-3">
+            <label for="updateFirstName" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="updateFirstName" name="firstName" [(ngModel)]="selectedMember.firstName" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateLastName" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="updateLastName" name="lastName" [(ngModel)]="selectedMember.lastName" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="updateEmail" name="email" [(ngModel)]="selectedMember.email" required email>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="updateForm.invalid">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
