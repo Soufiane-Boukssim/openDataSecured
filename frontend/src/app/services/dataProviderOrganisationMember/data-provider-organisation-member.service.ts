@@ -50,9 +50,10 @@ addDataProviderOrganisationMember(firstName: string, lastName: string, email: st
 
 
 
-assignUserToOrganisation(organisationId: string, userId: string): Observable<any> {
+assignUserToOrganisation(organisationId: string, userId: string): Observable<string> {
   return this.organisationService.assignUserToOrganisation(organisationId, userId);
 }
+
 
 getAllOrganisations(): Observable<DataProviderOrganisationRequest[]> {
   return this.organisationService.getProviderOrganisations();

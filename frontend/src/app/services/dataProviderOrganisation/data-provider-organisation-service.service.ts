@@ -43,9 +43,9 @@ export class DataProviderOrganisationServiceService {
 
 
 
-  assignUserToOrganisation(organisationId: string, userId: string): Observable<any> {
+assignUserToOrganisation(organisationId: string, userId: string): Observable<string> {
   const url = `${this.apiUrl}/${organisationId}/assign-user/${userId}`;
-  return this.http.post(url, null);
+  // Spécifier responseType: 'text' pour recevoir une réponse texte
+  return this.http.post(url, null, { responseType: 'text' });
 }
-
 }

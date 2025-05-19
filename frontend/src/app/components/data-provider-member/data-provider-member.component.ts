@@ -7,6 +7,7 @@ import { DataProviderOrganisationMemberService } from '../../services/dataProvid
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 declare var bootstrap: any;
@@ -14,7 +15,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-data-provider-member',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './data-provider-member.component.html',
   styleUrl: './data-provider-member.component.css'
 })
@@ -29,16 +30,16 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     lastName: '',
     email: ''
   };
+  organisations: DataProviderOrganisationRequest[] = [];
+  assignMode: boolean = false;
+  selectedOrganisationId: string | null = null;
 
-    organisations: DataProviderOrganisationRequest[] = [];  // Pour stocker les organisations
 
-
-  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router) {}
+  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadMembers();
-    this.loadOrganisations();  // Charger les organisations au démarrage
-
+    this.loadOrganisations();
   }
 
   ngAfterViewInit(): void {
@@ -54,7 +55,7 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     });
   }
 
-    loadOrganisations(): void {
+  loadOrganisations(): void {
     this.dataProviderOrganisationMemberService.getAllOrganisations().subscribe({
       next: (data) => {
         this.organisations = data;
@@ -77,6 +78,7 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     const found = this.members.find(t => t.uuid === uuid);
     if (found) {
       this.selectedMember = found;
+      this.assignMode = false; // Ensure the details view is shown
       const modalElement = document.getElementById('memberModal');
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
@@ -189,7 +191,7 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     const modal = document.getElementById('memberModal');
     const modalInstance = bootstrap.Modal.getInstance(modal);
     modalInstance.hide();
-    
+
     // Ensuite naviguer vers l'organisation
     setTimeout(() => {
       this.navigateToOrganisation(member);
@@ -197,35 +199,85 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
   }
 
 
+  openAssignOrganisationModal(member: DataProviderOrganisationMemberRequest): void {
+    this.selectedMember = member;
+    this.assignMode = true;
+    this.selectedOrganisationId = null; // Reset the selected organisation
 
-  // Méthode pour assigner un membre à une organisation
-  assignMemberToOrganisation(memberUuid: string, organisationUuid: string): void {
-    this.dataProviderOrganisationMemberService.assignUserToOrganisation(organisationUuid, memberUuid).subscribe({
-      next: () => {
-        alert('Membre assigné avec succès à l\'organisation');
-        // Tu peux ici recharger les membres ou faire autre chose
-      },
-      error: (err) => {
-        console.error('Erreur lors de l\'assignation', err);
-        alert('Erreur lors de l\'assignation du membre à l\'organisation');
-      }
-    });
-  }
-
-  // Exemple d’appel depuis le template (bouton, etc.)
-  onAssignClicked(member: DataProviderOrganisationMemberRequest, organisationUuid: string) {
-    if (member.uuid && organisationUuid) {
-      this.assignMemberToOrganisation(member.uuid, organisationUuid);
+    const modalElement = document.getElementById('memberModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
     }
   }
 
-
-
-
-  showNoOrganisationPopup() {
-  alert('This member has no assigned organisation.');
-  // Or your logic to display a more sophisticated popup
+assignOrganisationToMember(): void {
+  if (this.selectedMember?.uuid && this.selectedOrganisationId) {
+    this.dataProviderOrganisationMemberService.assignUserToOrganisation(this.selectedOrganisationId, this.selectedMember.uuid).subscribe({
+      next: (response: string) => {
+        // Fermer la modal avant d'afficher l'alerte
+        this.closeMemberModal();
+        
+        // Puis afficher un message de succès
+        setTimeout(() => {
+          alert(`Membre ${this.selectedMember?.firstName} ${this.selectedMember?.lastName} assigné avec succès à l'organisation.`);
+          // Recharger les données après la fermeture de l'alerte
+          this.loadMembers();
+        }, 300);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Erreur HTTP lors de l\'assignation', err);
+        let errorMessage = 'Erreur lors de l\'assignation.';
+        if (err.error && typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.error) {
+          errorMessage = JSON.stringify(err.error);
+        }
+        // Fermer la modal avant d'afficher l'erreur
+        this.closeMemberModal();
+        
+        setTimeout(() => {
+          alert(errorMessage);
+        }, 300);
+      }
+    });
   }
+}
 
-  
+
+
+
+
+
+closeMemberModal(): void {
+  const modalElement = document.getElementById('memberModal');
+  if (modalElement) {
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+      modal.hide();
+      
+      // S'assurer que le backdrop est correctement supprimé
+      setTimeout(() => {
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+          backdrop.remove();
+        }
+        
+        // Rétablir le défilement normal de la page
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 200);
+    }
+    
+    this.assignMode = false; // Reset assign mode
+    this.selectedMember = null; // Clear selected member
+  }
+}
+
+
+
+
 }

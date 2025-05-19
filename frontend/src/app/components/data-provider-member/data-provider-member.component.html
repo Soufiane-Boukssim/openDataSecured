@@ -27,8 +27,10 @@
           </small>
           <ng-template #noOrg>
             <small class="text-muted d-block">
-              Organisation : 
-              <i>non assignée</i>
+              Organisation :
+              <a (click)="openAssignOrganisationModal(member)" style="cursor: pointer;">
+                <i>non assignée</i>
+              </a>
             </small>
           </ng-template>
 
@@ -78,47 +80,63 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
 
-      <div class="modal-body" *ngIf="selectedMember">
-        <ul class="list-group">
-          <li class="list-group-item">
-            <strong>Nom :</strong> {{ selectedMember.lastName }}
-          </li>
-          <li class="list-group-item">
-            <strong>Prénom :</strong>{{ selectedMember.firstName }} 
-          </li>
-          <li class="list-group-item">
-            <strong>Email :</strong> {{ selectedMember.email }}
-          </li>
-          <!-- Organisation ajoutée ici -->
-          <li class="list-group-item">
-            <strong>Organisation :</strong> 
-            <ng-container *ngIf="selectedMember.dataProviderOrganisation; else noDetailOrg">
-              <a (click)="navigateToOrganisationFromModal(selectedMember)" style="cursor: pointer; color: #0d6efd;">
-                {{ selectedMember.dataProviderOrganisation.name }}
-              </a>
-            </ng-container>
-            <ng-template #noDetailOrg>
-              <i>non assignée</i>
-            </ng-template>
-          </li>
+      <div class="modal-body">
+        <ng-container *ngIf="selectedMember && !assignMode">
+          <ul class="list-group">
+            <li class="list-group-item">
+              <strong>Nom :</strong> {{ selectedMember.lastName }}
+            </li>
+            <li class="list-group-item">
+              <strong>Prénom :</strong>{{ selectedMember.firstName }}
+            </li>
+            <li class="list-group-item">
+              <strong>Email :</strong> {{ selectedMember.email }}
+            </li>
 
-          <li class="list-group-item">
-            <strong>Créé par :</strong> {{ selectedMember.createdBy }}
-          </li>
-          <li class="list-group-item">
-            <strong>Date de création :</strong> {{ selectedMember.createdOn | date:'fullDate' }}
-          </li>
-          <li class="list-group-item">
-            <strong>Modifié par :</strong> {{ selectedMember.updatedBy }}
-          </li>
-          <li class="list-group-item">
-            <strong>Date de modification :</strong> {{ selectedMember.updatedOn | date:'fullDate' }}
-          </li>
-          <li class="list-group-item">
-            <strong>UUID :</strong> <code>{{ selectedMember.uuid }}</code>
-          </li>
+            <li class="list-group-item">
+              <strong>Organisation :</strong>
+              <ng-container *ngIf="selectedMember.dataProviderOrganisation; else noDetailOrg">
+                <a (click)="navigateToOrganisationFromModal(selectedMember)" style="cursor: pointer; color: #0d6efd;">
+                  {{ selectedMember.dataProviderOrganisation.name }}
+                </a>
+              </ng-container>
+              <ng-template #noDetailOrg>
+                <a (click)="openAssignOrganisationModal(selectedMember)" style="cursor: pointer;">
+                  <i>non assignée</i>
+                </a>
+              </ng-template>
+            </li>
 
-        </ul>
+            <li class="list-group-item">
+              <strong>Créé par :</strong> {{ selectedMember.createdBy }}
+            </li>
+            <li class="list-group-item">
+              <strong>Date de création :</strong> {{ selectedMember.createdOn | date:'fullDate' }}
+            </li>
+            <li class="list-group-item">
+              <strong>Modifié par :</strong> {{ selectedMember.updatedBy }}
+            </li>
+            <li class="list-group-item">
+              <strong>Date de modification :</strong> {{ selectedMember.updatedOn | date:'fullDate' }}
+            </li>
+            <li class="list-group-item">
+              <strong>UUID :</strong> <code>{{ selectedMember.uuid }}</code>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="assignMode && selectedMember">
+          <h5>Affecter une organisation à : {{ selectedMember.firstName }} {{ selectedMember.lastName }}</h5>
+          <form (ngSubmit)="assignOrganisationToMember()">
+            <div class="mb-3">
+              <label for="organisationSelect" class="form-label">Sélectionner une organisation</label>
+              <select class="form-select" id="organisationSelect" [(ngModel)]="selectedOrganisationId" name="selectedOrganisationId">
+                <option [value]="null">-- Choisir une organisation --</option>
+                <option *ngFor="let org of organisations" [value]="org.uuid">{{ org.name }}</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!selectedOrganisationId">Assigner</button>
+          </form>
+        </ng-container>
       </div>
 
       <div class="modal-footer">
