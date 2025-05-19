@@ -220,5 +220,12 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
   }
 
 
+
+
+  showNoOrganisationPopup() {
+  alert('This member has no assigned organisation.');
+  // Or your logic to display a more sophisticated popup
+  }
+
   
 }
