@@ -40,5 +40,12 @@ export class DataProviderOrganisationServiceService {
     }
     return this.http.post<DataProviderOrganisationRequest>(`${this.apiUrl}/save`, formData);
   }
-  
+
+
+
+  assignUserToOrganisation(organisationId: string, userId: string): Observable<any> {
+  const url = `${this.apiUrl}/${organisationId}/assign-user/${userId}`;
+  return this.http.post(url, null);
+}
+
 }

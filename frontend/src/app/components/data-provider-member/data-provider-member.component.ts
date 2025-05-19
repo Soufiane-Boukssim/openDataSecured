@@ -6,6 +6,7 @@ import { DataProviderOrganisationMemberRequest } from '../../models/DataProvider
 import { DataProviderOrganisationMemberService } from '../../services/dataProviderOrganisationMember/data-provider-organisation-member.service';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
+import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
 
 
 declare var bootstrap: any;
@@ -29,10 +30,15 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     email: ''
   };
 
+    organisations: DataProviderOrganisationRequest[] = [];  // Pour stocker les organisations
+
+
   constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadMembers();
+    this.loadOrganisations();  // Charger les organisations au démarrage
+
   }
 
   ngAfterViewInit(): void {
@@ -47,6 +53,18 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
       this.members = data;
     });
   }
+
+    loadOrganisations(): void {
+    this.dataProviderOrganisationMemberService.getAllOrganisations().subscribe({
+      next: (data) => {
+        this.organisations = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des organisations', err);
+      }
+    });
+  }
+
 
   get filteredMembers(): DataProviderOrganisationMemberRequest[] {
     if (!this.searchTerm) return this.members;
@@ -169,6 +187,26 @@ navigateToOrganisation(member: any): void {
 
 
 
+  // Méthode pour assigner un membre à une organisation
+  assignMemberToOrganisation(memberUuid: string, organisationUuid: string): void {
+    this.dataProviderOrganisationMemberService.assignUserToOrganisation(organisationUuid, memberUuid).subscribe({
+      next: () => {
+        alert('Membre assigné avec succès à l\'organisation');
+        // Tu peux ici recharger les membres ou faire autre chose
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'assignation', err);
+        alert('Erreur lors de l\'assignation du membre à l\'organisation');
+      }
+    });
+  }
+
+  // Exemple d’appel depuis le template (bouton, etc.)
+  onAssignClicked(member: DataProviderOrganisationMemberRequest, organisationUuid: string) {
+    if (member.uuid && organisationUuid) {
+      this.assignMemberToOrganisation(member.uuid, organisationUuid);
+    }
+  }
 
 
   
