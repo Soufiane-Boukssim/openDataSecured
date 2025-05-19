@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Modal } from 'bootstrap';
 import { DataProviderOrganisationMemberRequest } from '../../models/DataProviderOrganisationMemberRequest';
 import { DataProviderOrganisationMemberService } from '../../services/dataProviderOrganisationMember/data-provider-organisation-member.service';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+
 
 declare var bootstrap: any;
 
@@ -27,7 +29,7 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     email: ''
   };
 
-  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService) {}
+  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadMembers();
@@ -149,4 +151,25 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+
+  @Input() member: any;
+navigateToOrganisation(member: any): void {
+    console.log('Membre cliqué :', member);
+    if (member?.dataProviderOrganisation?.uuid) {
+      this.router.navigate(['/admin/producteurs/organisations'], {
+        state: { organisationUuidToView: member.dataProviderOrganisation.uuid } // Renommer la clé pour plus de clarté
+      });
+    } else {
+      console.warn('Impossible de naviguer vers l\'organisation : informations manquantes.');
+    }
+  }
+
+
+
+
+
+
+
+  
 }

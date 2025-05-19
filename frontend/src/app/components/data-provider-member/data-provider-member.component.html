@@ -21,8 +21,7 @@
 
           <small class="text-muted d-block" *ngIf="member.dataProviderOrganisation; else noOrg">
             Organisation :
-              <a [routerLink]="['/admin/producteurs/organisations']">
-              <!-- <a [routerLink]="['/admin/producteurs/organisations', member.dataProviderOrganisation.uuid]"> -->
+            <a (click)="navigateToOrganisation(member)" style="cursor: pointer;">
               {{ member.dataProviderOrganisation.name }}
             </a>
           </small>
@@ -90,15 +89,6 @@
             <strong>Email :</strong> {{ selectedMember.email }}
           </li>
 
-          <li class="list-group-item" *ngIf="selectedMember.dataProviderOrganisation?.name; else noSelectedOrg">
-            <strong>Organisation :</strong> {{ selectedMember.dataProviderOrganisation.name }}
-          </li>
-          <ng-template #noSelectedOrg>
-            <li class="list-group-item">
-              <strong>Organisation :</strong> <i>non assignée</i>
-            </li>
-          </ng-template>
-
 
 
           <li class="list-group-item">
@@ -126,6 +116,31 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

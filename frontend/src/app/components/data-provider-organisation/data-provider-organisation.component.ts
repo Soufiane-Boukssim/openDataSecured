@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Modal } from 'bootstrap';
 import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
 import { DataProviderOrganisationServiceService } from '../../services/dataProviderOrganisation/data-provider-organisation-service.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -29,10 +30,20 @@ export class DataProviderOrganisationComponent implements OnInit, AfterViewInit 
     description: ''
   };
 
-  constructor(private orgService: DataProviderOrganisationServiceService) {}
+  private organisationUuidToView: string | null = null;
+
+  constructor(private orgService: DataProviderOrganisationServiceService, private router: Router,private route: ActivatedRoute) {
+    const navigation = this.router.getCurrentNavigation();
+    this.organisationUuidToView = navigation?.extras?.state?.['organisationUuidToView'] as string | null;
+  }
 
   ngOnInit(): void {
-    this.loadOrganisations();
+    this.loadOrganisations(() => {
+      if (this.organisationUuidToView) {
+        this.viewOrganisation(this.organisationUuidToView);
+        this.router.navigate([], { relativeTo: this.route, replaceUrl: true, state: {} });
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -42,7 +53,7 @@ export class DataProviderOrganisationComponent implements OnInit, AfterViewInit 
     }
   }
 
- loadOrganisations(): void {
+  loadOrganisations(callback?: () => void): void {
     this.orgService.getProviderOrganisations().subscribe(data => {
       this.organisations = data.map(org => {
         if (org.iconData) {
@@ -50,6 +61,9 @@ export class DataProviderOrganisationComponent implements OnInit, AfterViewInit 
         }
         return org;
       });
+      if (callback) {
+        callback();
+      }
     });
   }
 
