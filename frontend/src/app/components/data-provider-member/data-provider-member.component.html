@@ -88,8 +88,18 @@
           <li class="list-group-item">
             <strong>Email :</strong> {{ selectedMember.email }}
           </li>
-
-
+          <!-- Organisation ajoutée ici -->
+          <li class="list-group-item">
+            <strong>Organisation :</strong> 
+            <ng-container *ngIf="selectedMember.dataProviderOrganisation; else noDetailOrg">
+              <a (click)="navigateToOrganisationFromModal(selectedMember)" style="cursor: pointer; color: #0d6efd;">
+                {{ selectedMember.dataProviderOrganisation.name }}
+              </a>
+            </ng-container>
+            <ng-template #noDetailOrg>
+              <i>non assignée</i>
+            </ng-template>
+          </li>
 
           <li class="list-group-item">
             <strong>Créé par :</strong> {{ selectedMember.createdBy }}
@@ -116,31 +126,6 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

@@ -172,7 +172,7 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
 
 
   @Input() member: any;
-navigateToOrganisation(member: any): void {
+  navigateToOrganisation(member: any): void {
     console.log('Membre cliqué :', member);
     if (member?.dataProviderOrganisation?.uuid) {
       this.router.navigate(['/admin/producteurs/organisations'], {
@@ -184,6 +184,17 @@ navigateToOrganisation(member: any): void {
   }
 
 
+  navigateToOrganisationFromModal(member: any) {
+    // D'abord fermer la modale actuelle
+    const modal = document.getElementById('memberModal');
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
+    
+    // Ensuite naviguer vers l'organisation
+    setTimeout(() => {
+      this.navigateToOrganisation(member);
+    }, 150); // Petit délai pour s'assurer que la modale est bien fermée
+  }
 
 
 
