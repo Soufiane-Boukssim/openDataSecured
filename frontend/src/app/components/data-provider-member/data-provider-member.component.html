@@ -11,6 +11,18 @@
     />
   </div>
 
+
+
+  <div class="d-flex justify-content-start mb-3">
+    <button type="button" class="btn btn-success" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Ajouter un membre
+    </button>
+  </div>
+
+
+
+
+
   <div class="row">
     <div class="col-12 col-xl-4" *ngFor="let member of filteredMembers">
       <div class="card mb-3 shadow-sm">
