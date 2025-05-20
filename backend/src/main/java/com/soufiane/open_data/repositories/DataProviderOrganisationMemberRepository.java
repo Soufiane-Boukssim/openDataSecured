@@ -17,6 +17,7 @@ public interface DataProviderOrganisationMemberRepository extends JpaRepository<
     List<DataProviderOrganisationMember> findByDataProviderOrganisation_UuidAndDeletedFalse(UUID organisationUuid);
 
 
+    long countByDeletedFalse();
 
 
 

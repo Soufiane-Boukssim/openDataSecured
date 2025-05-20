@@ -59,4 +59,9 @@ getAllOrganisations(): Observable<DataProviderOrganisationRequest[]> {
   return this.organisationService.getProviderOrganisations();
 }
 
+
+getOrganisationMemberCount(): Observable<number> {
+  return this.http.get<number>(`${this.apiUrl}/count`);
+}
+
 }

@@ -16,7 +16,7 @@ public interface DataProviderOrganisationMemberService {
 
 //    DataProviderUser updateDataProviderUserById(UUID uuid, String name, String description, MultipartFile icon) throws IOException;
 //    Boolean deleteDataProviderUserById(UUID uuid);
-//    Long getNumberOfDataProviderUsers();
+    Long getNumberOfDataProviderUsers();
 //    byte[] getDataProviderUserImage(String fileName) throws IOException;
 
 }

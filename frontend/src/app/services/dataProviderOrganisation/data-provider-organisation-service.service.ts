@@ -48,4 +48,11 @@ assignUserToOrganisation(organisationId: string, userId: string): Observable<str
   // Spécifier responseType: 'text' pour recevoir une réponse texte
   return this.http.post(url, null, { responseType: 'text' });
 }
+
+
+getOrganisationCount(): Observable<number> {
+  return this.http.get<number>(`${this.apiUrl}/count`);
+}
+
+
 }

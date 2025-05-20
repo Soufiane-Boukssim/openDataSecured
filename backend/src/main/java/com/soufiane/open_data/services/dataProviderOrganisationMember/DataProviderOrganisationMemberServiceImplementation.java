@@ -108,6 +108,11 @@ public class DataProviderOrganisationMemberServiceImplementation implements Data
 
     }
 
+    @Override
+    public Long getNumberOfDataProviderUsers() {
+        return dataProviderOrganisationMemberRepository.countByDeletedFalse();
+    }
+
     private DataProviderOrganisationMember findDataProviderMemberById(UUID uuid){
         return dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(uuid);
     }

@@ -59,4 +59,9 @@ public class DataProviderOrganisationMemberController {
     }
 
 
+    @GetMapping("/count")
+    public Long getNumberOfOrganisationsMembers() {
+        return dataProviderOrganisationMemberService.getNumberOfDataProviderUsers();
+    }
+
 }

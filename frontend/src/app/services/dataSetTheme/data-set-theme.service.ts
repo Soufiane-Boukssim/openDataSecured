@@ -43,4 +43,8 @@ export class DataSetThemeService {
   }
 
 
+  getThemeCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/count`);
+  }
+
 }
