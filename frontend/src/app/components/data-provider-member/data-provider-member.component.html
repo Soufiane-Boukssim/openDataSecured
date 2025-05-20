@@ -215,6 +215,42 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
       <div class="modal-body" *ngIf="selectedMember">
+
+
+
+
+<div class="mb-3">
+  <label for="organisationSelect" class="form-label">Organisation</label>
+  
+  <!-- Si on est en mode assignation, on affiche le select -->
+  <ng-container *ngIf="assignMode && selectedMember; else showOrganisationName">
+    <select class="form-select" id="organisationSelect" [(ngModel)]="selectedOrganisationId" name="selectedOrganisationId" required>
+      <option [ngValue]="null">-- Choisir une organisation --</option>
+      <option *ngFor="let org of organisations" [ngValue]="org.uuid">{{ org.name }}</option>
+    </select>
+    <button type="button" class="btn btn-sm btn-primary mt-2" (click)="assignOrganisationToMember()" [disabled]="!selectedOrganisationId">Assigner</button>
+  </ng-container>
+  
+  <!-- Sinon on affiche le nom ou "non assignée" cliquable pour passer en mode assignation -->
+  <ng-template #showOrganisationName>
+  <small class="text-muted d-block">
+    Organisation : 
+    <a (click)="assignMode = true" style="cursor: pointer;">
+      {{ selectedMember.dataProviderOrganisation?.name || 'non assignée (cliquer pour changer)' }}
+    </a>
+  </small>
+
+
+
+  </ng-template>
+</div>
+
+
+
+
+
+
+
         <form #updateForm="ngForm" (ngSubmit)="submitUpdate()">
           <div class="mb-3">
             <label for="updateFirstName" class="form-label">Prénom</label>

@@ -256,7 +256,7 @@ assignOrganisationToMember(): void {
 
 
 closeMemberModal(reset: boolean = true): void {
-  const modalElement = document.getElementById('memberModal');
+  const modalElement = document.getElementById('updateMemberModal');  // <-- ici
   if (modalElement) {
     const modal = bootstrap.Modal.getInstance(modalElement);
     if (modal) {

@@ -149,9 +149,9 @@ public class DataProviderOrganisationServiceImplementation implements DataProvid
             errors.add("Member not found with the id: "+userId);
         }
 
-        if (dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(userId).getDataProviderOrganisation()!=null ){
-            errors.add("Member with id: "+userId+" already assign to an organisation");
-        }
+//        if (dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(userId).getDataProviderOrganisation()!=null ){
+//            errors.add("Member with id: "+userId+" already assign to an organisation");
+//        }
 
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException("Erreur(s): " + String.join(", ", errors) );
