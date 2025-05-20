@@ -219,12 +219,19 @@ assignOrganisationToMember(): void {
 
     this.dataProviderOrganisationMemberService.assignUserToOrganisation(this.selectedOrganisationId, this.selectedMember.uuid).subscribe({
       next: (response: string) => {
-        // Fermer la modal
-        this.closeMemberModal(false); // 👈 Passer false pour NE PAS reset selectedMember immédiatement
+        // Fermer la modal Bootstrap directement
+        const modalElement = document.getElementById('memberModal');
+        if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          }
+        }
 
         setTimeout(() => {
+          this.closeMemberModal(false);
           alert(`Membre ${prenom} ${nom} assigné avec succès à l'organisation.`);
-          this.selectedMember = null; // 👈 On reset ici, après avoir utilisé les infos
+          this.selectedMember = null;
           this.assignMode = false;
           this.loadMembers();
         }, 300);
@@ -239,11 +246,18 @@ assignOrganisationToMember(): void {
           errorMessage = JSON.stringify(err.error);
         }
 
-        this.closeMemberModal(false); // 👈 idem ici
+        // Même fermeture ici aussi
+        const modalElement = document.getElementById('memberModal');
+        if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          }
+        }
 
         setTimeout(() => {
           alert(errorMessage);
-          this.selectedMember = null; // 👈 on peut reset ici si tu veux aussi
+          this.selectedMember = null;
           this.assignMode = false;
         }, 300);
       }
