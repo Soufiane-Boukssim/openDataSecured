@@ -211,22 +211,25 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     }
   }
 
+
 assignOrganisationToMember(): void {
   if (this.selectedMember?.uuid && this.selectedOrganisationId) {
+    const prenom = this.selectedMember.firstName;
+    const nom = this.selectedMember.lastName;
+
     this.dataProviderOrganisationMemberService.assignUserToOrganisation(this.selectedOrganisationId, this.selectedMember.uuid).subscribe({
       next: (response: string) => {
-        // Fermer la modal avant d'afficher l'alerte
-        this.closeMemberModal();
-        
-        // Puis afficher un message de succès
+        // Fermer la modal
+        this.closeMemberModal(false); // 👈 Passer false pour NE PAS reset selectedMember immédiatement
+
         setTimeout(() => {
-          alert(`Membre ${this.selectedMember?.firstName} ${this.selectedMember?.lastName} assigné avec succès à l'organisation.`);
-          // Recharger les données après la fermeture de l'alerte
+          alert(`Membre ${prenom} ${nom} assigné avec succès à l'organisation.`);
+          this.selectedMember = null; // 👈 On reset ici, après avoir utilisé les infos
+          this.assignMode = false;
           this.loadMembers();
         }, 300);
       },
       error: (err: HttpErrorResponse) => {
-        console.error('Erreur HTTP lors de l\'assignation', err);
         let errorMessage = 'Erreur lors de l\'assignation.';
         if (err.error && typeof err.error === 'string') {
           errorMessage = err.error;
@@ -235,11 +238,13 @@ assignOrganisationToMember(): void {
         } else if (err.error) {
           errorMessage = JSON.stringify(err.error);
         }
-        // Fermer la modal avant d'afficher l'erreur
-        this.closeMemberModal();
-        
+
+        this.closeMemberModal(false); // 👈 idem ici
+
         setTimeout(() => {
           alert(errorMessage);
+          this.selectedMember = null; // 👈 on peut reset ici si tu veux aussi
+          this.assignMode = false;
         }, 300);
       }
     });
@@ -250,32 +255,29 @@ assignOrganisationToMember(): void {
 
 
 
-
-closeMemberModal(): void {
+closeMemberModal(reset: boolean = true): void {
   const modalElement = document.getElementById('memberModal');
   if (modalElement) {
     const modal = bootstrap.Modal.getInstance(modalElement);
     if (modal) {
       modal.hide();
-      
-      // S'assurer que le backdrop est correctement supprimé
       setTimeout(() => {
         const backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) {
-          backdrop.remove();
-        }
-        
-        // Rétablir le défilement normal de la page
+        if (backdrop) backdrop.remove();
+
         document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
       }, 200);
     }
-    
-    this.assignMode = false; // Reset assign mode
-    this.selectedMember = null; // Clear selected member
+
+    if (reset) {
+      this.assignMode = false;
+      this.selectedMember = null;
+    }
   }
 }
+
 
 
 
