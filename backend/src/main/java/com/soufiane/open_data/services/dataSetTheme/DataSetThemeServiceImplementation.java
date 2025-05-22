@@ -32,9 +32,9 @@ public class DataSetThemeServiceImplementation implements DataSetThemeService {
     public List<DataSetThemeResponse> getAllThemes() {
         List<DataSetThemeResponse> themesResponse = new ArrayList<>();
         List<DataSetTheme> themes = dataSetThemeRepository.findByDeletedFalse();
-            for (DataSetTheme theme : themes) {
-                themesResponse.add(dataSetThemeMapper.convertToResponse(theme));
-            }
+        for (DataSetTheme theme : themes) {
+            themesResponse.add(dataSetThemeMapper.convertToResponse(theme));
+        }
         return themesResponse;
     }
 
@@ -184,5 +184,4 @@ public class DataSetThemeServiceImplementation implements DataSetThemeService {
     }
 
 }
-
 
