@@ -1,1 +1,22 @@
-<p>data-set works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Upload Data Set</h5>
+          <p class="card-text">Envoyez un nouveau jeu de données.</p>
+          <button class="btn btn-primary" (click)="onUpload()">Upload</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Download Data Set</h5>
+          <p class="card-text">Téléchargez les jeux de données existants.</p>
+          <button class="btn btn-success" (click)="onDownload()">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

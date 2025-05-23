@@ -9,28 +9,37 @@ import { AuthGuard } from './guards/auth.guard';
 import { ChatBotComponent } from './components/chat-bot/chat-bot.component';
 import { DataProviderOrganisationComponent } from './components/data-provider-organisation/data-provider-organisation.component';
 import { DataProviderMemberComponent } from './components/data-provider-member/data-provider-member.component';
+import { DataSetUploadComponent } from './components/data-set-upload/data-set-upload.component';
+import { DataSetDownloadComponent } from './components/data-set-download/data-set-download.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
   {
     path: 'admin',
     children: [
-      { path: '', redirectTo: 'login', pathMatch: 'full' }, // ✅ Ajout important ici
+      { path: '', redirectTo: 'login', pathMatch: 'full' }, 
       { path: 'login', component: LoginComponent },
       {
         path: '',
         component: MainComponent,
-        canActivate: [AuthGuard], // ✅ PROTECTION
-        // data: { breadcrumb: 'Admin' },  // <-- ici
+        canActivate: [AuthGuard], 
         children: [
           {
             path: '',
             component: ContentComponent,
-            data: { breadcrumb: 'Admin' },  // <-- ici
+            data: { breadcrumb: 'Admin' },  
             children: [
               { path: 'home', component: HomeComponent, data: { breadcrumb: 'Home' }  },
               { path: 'dataSetThemes', component: DataSetThemeComponent, data: { breadcrumb: 'Themes' } },
-              { path: 'donnees', component: DataSetComponent, data: { breadcrumb: 'Données' }  },
+              { 
+                path: 'donnees', 
+                data: { breadcrumb: 'Données' },
+                children: [
+                  { path: '', component: DataSetComponent, data: { breadcrumb: '' } },
+                  { path: 'upload', component: DataSetUploadComponent, data: { breadcrumb: 'Upload' } },
+                  { path: 'download', component: DataSetDownloadComponent, data: { breadcrumb: 'Download' } },
+                ]  
+              },
               { path: 'chatBot', component: ChatBotComponent, data: { breadcrumb: 'chatBot' }  },
               
               {
