@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
-import { MainComponent } from './pages/main/main.component';
+import { MainComponent } from './components/main/main.component';
 import { ContentComponent } from './components/content/content.component';
-import { HomeComponent } from './components/home/home.component';
-import { DataSetThemeComponent } from './components/dataSetTheme/dataSetTheme.component';
-import { DataSetComponent } from './components/data-set/data-set.component';
+import { HomeComponent } from './pages/home/home.component';
+import { DataSetThemeComponent } from './pages/dataSetTheme/dataSetTheme.component';
+import { DataSetComponent } from './pages/data-set/data-set.component';
 import { AuthGuard } from './guards/auth.guard';
-import { ChatBotComponent } from './components/chat-bot/chat-bot.component';
-import { DataProviderOrganisationComponent } from './components/data-provider-organisation/data-provider-organisation.component';
-import { DataProviderMemberComponent } from './components/data-provider-member/data-provider-member.component';
-import { DataSetUploadComponent } from './components/data-set-upload/data-set-upload.component';
-import { DataSetDownloadComponent } from './components/data-set-download/data-set-download.component';
+import { ChatBotComponent } from './pages/chat-bot/chat-bot.component';
+import { DataProviderOrganisationComponent } from './pages/data-provider-organisation/data-provider-organisation.component';
+import { DataProviderMemberComponent } from './pages/data-provider-member/data-provider-member.component';
+import { DataSetUploadComponent } from './pages/data-set-upload/data-set-upload.component';
+import { DataSetDownloadComponent } from './pages/data-set-download/data-set-download.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
