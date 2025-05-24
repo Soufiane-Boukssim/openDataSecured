@@ -7,13 +7,13 @@ import { Modal } from 'bootstrap';
 
 declare var bootstrap: any;
 
-
 @Component({
   selector: 'app-dataSetTheme',
   imports: [CommonModule, FormsModule],
   templateUrl: './dataSetTheme.component.html',
   styleUrls: ['./dataSetTheme.component.css']
 })
+
 export class DataSetThemeComponent implements AfterViewInit {
   searchTerm: string = '';
   themes: DataSetThemeRequest[] = [];
@@ -53,16 +53,16 @@ export class DataSetThemeComponent implements AfterViewInit {
   }
 
   viewTheme(uuid: string) {
-  const found = this.themes.find(t => t.uuid === uuid);
-  if (found) {
-    this.selectedTheme = found;
-    const modalElement = document.getElementById('themeModal');
-    if (modalElement) {
-      const modal = new (window as any).bootstrap.Modal(modalElement);
-      modal.show();
+    const found = this.themes.find(t => t.uuid === uuid);
+    if (found) {
+      this.selectedTheme = found;
+      const modalElement = document.getElementById('themeModal');
+      if (modalElement) {
+        const modal = new (window as any).bootstrap.Modal(modalElement);
+        modal.show();
+      }
     }
   }
-}
 
 
 

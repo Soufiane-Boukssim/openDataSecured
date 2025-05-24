@@ -1,14 +1,18 @@
-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-h2 {
+.card-title {
   font-weight: bold;
   color: #333;
 }
 
-input::placeholder {
+.card-text {
   font-style: italic;
-  color: #aaa;
+  color: #555;
+}
+
+.card {
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }

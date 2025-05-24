@@ -2,7 +2,12 @@ package com.soufiane.open_data.controllers;
 
 import com.soufiane.open_data.dtos.dataSet.DataSetResponse;
 import com.soufiane.open_data.services.dataSet.DataSetService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,5 +88,26 @@ public class DataSetController {
                 .body(fileContent);
     }
 
+
+    @GetMapping("/template/excel")
+    public void downloadExcelTemplate(HttpServletResponse response) throws IOException {
+        // Définir les titres
+        String[] headers = { "Année budgétaire", "Nom bénéficiaire", "Numéro Siret", "Objet du dossier","Montant voté","Direction","Nature de la subvention" };
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Template");
+
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+
+        // Configuration de la réponse HTTP
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=template_administration&finances.xlsx");
+
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
 
 }

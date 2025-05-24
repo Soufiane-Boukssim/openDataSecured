@@ -17,6 +17,7 @@ public class DataSet {
     private UUID uuid;
     @Column(nullable = false, unique = true)
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String createdBy;
     private String updatedBy;

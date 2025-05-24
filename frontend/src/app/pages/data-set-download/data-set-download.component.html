@@ -1,44 +1,27 @@
-<div class="container mt-4">
-  <h2 class="mb-4 text-center">Téléchargement des jeux de données</h2>
-
-  <!-- Barre de recherche -->
-  <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Rechercher un jeu de données..." [(ngModel)]="searchTerm">
-    <button class="btn btn-outline-secondary" type="button">Rechercher</button>
-  </div>
-
-  <!-- Table responsive -->
-  <div class="table-responsive shadow rounded">
-    <table class="table table-striped table-hover">
-      <thead class="table-dark">
-        <tr>
-          <th>Nom</th>
-          <th>Description</th>
-          <th>Thème (ID)</th> 
-          <th>Thème (Nom)</th> 
-          <th>Date de publication</th>
-          <th>Téléchargement</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let dataset of filteredDatasets">
-          <td>{{ dataset.name }}</td>
-          <td>{{ dataset.description }}</td>
-          <td>{{ dataset.themeId }}</td>
-          <td>{{ dataset.themeName }}</td>
-          <td>{{ dataset.createdOn | date: 'dd/MM/yyyy' }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm" (click)="downloadDataset(dataset)">
-              <i class="bi bi-download"></i> Télécharger
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Aucun résultat -->
-  <div *ngIf="filteredDatasets.length === 0" class="alert alert-warning mt-3">
-    Aucun jeu de données trouvé.
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <div class="col" *ngFor="let dataset of filteredDatasets">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ dataset.name }}</h5>
+        <p class="card-text">
+          {{ dataset.description.length > 100 ? (dataset.description | slice:0:100) + '...' : dataset.description }}
+        </p>
+        <ul class="list-unstyled">
+          <li><strong>Thème:</strong> {{ dataset.themeName }}</li>
+          <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
+        </ul>
+      </div>
+      <div class="card-footer d-flex justify-content-between bg-white border-top-0">
+        <button class="btn btn-info btn-sm" (click)="viewDataset(dataset)">
+          <i class="bi bi-eye"></i> View
+        </button>
+        <button class="btn btn-warning btn-sm" (click)="updateDataset(dataset)">
+          <i class="bi bi-pencil"></i> Update
+        </button>
+        <button class="btn btn-danger btn-sm" (click)="deleteDataset(dataset)">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </div>
+    </div>
   </div>
 </div>

@@ -38,7 +38,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.PUT, "/api/themes/**").hasAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/themes/**").hasAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/data-provider/organisation-members/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers("/api/login", "/api/register", "/api/themes/**","/api/data-provider/organisations/**","/api/data-provider/organisation-members/**").permitAll() // Permet tout sauf DELETE
+                    .requestMatchers("/api/login", "/api/register", "/api/themes/**","/api/data-provider/organisations/**","/api/data-provider/organisation-members/**","/api/datasets/**").permitAll() // Permet tout sauf DELETE
                     .requestMatchers("/students3").hasAuthority("ROLE_ADMIN")
                     .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
