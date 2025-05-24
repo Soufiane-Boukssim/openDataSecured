@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FileService } from '../../services/file/file.service';
 import { CommonModule } from '@angular/common';
 
@@ -10,6 +10,9 @@ import { CommonModule } from '@angular/common';
 })
 
 export class FileComponent {
+
+  @Input() selectedThemeUuid: string = ''; // <- Ici tu reçois le thème
+
   themes = [
     { name: 'Environnement', key: 'environnement' },
     { name: 'Sport', key: 'sport' },
@@ -17,6 +20,11 @@ export class FileComponent {
   ];
 
   constructor(private fileService: FileService) {}
+
+  get filteredThemes() {
+  return this.themes.filter(t => t.key === this.selectedThemeUuid);
+}
+
 
   downloadTemplate(theme: string): void {
     this.fileService.downloadExcelTemplate(theme);

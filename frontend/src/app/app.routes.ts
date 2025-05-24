@@ -38,7 +38,6 @@ export const routes: Routes = [
                 children: [
                   { path: '', component: DataSetComponent, data: { breadcrumb: '' } },
                   { path: 'upload', component: DataSetUploadComponent, data: { breadcrumb: 'Upload' } },
-                  { path: 'upload/test', component: FileComponent, data: { breadcrumb: 'Upload/test' } },
                   { path: 'download', component: DataSetDownloadComponent, data: { breadcrumb: 'Download' } },
                 ]  
               },

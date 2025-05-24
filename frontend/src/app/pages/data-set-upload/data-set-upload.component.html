@@ -20,8 +20,11 @@
     </select>
     </div>
 
-    <h3>Télécharger un modèle Excel</h3>
-    <app-file></app-file> 
+    <div *ngIf="themeUuid">
+        <h3>Télécharger un modèle Excel</h3>
+        <app-file [selectedThemeUuid]="themeUuid"></app-file>
+    </div>
+
 
 
     <label for="file">Fichier :</label>
