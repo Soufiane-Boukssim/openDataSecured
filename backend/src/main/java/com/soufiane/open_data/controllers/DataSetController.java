@@ -89,10 +89,24 @@ public class DataSetController {
     }
 
 
-    @GetMapping("/template/excel")
-    public void downloadExcelTemplate(HttpServletResponse response) throws IOException {
-        // Définir les titres
-        String[] headers = { "Année budgétaire", "Nom bénéficiaire", "Numéro Siret", "Objet du dossier","Montant voté","Direction","Nature de la subvention" };
+    @GetMapping("/template/excel/{theme}")
+    public void downloadExcelTemplate(@PathVariable String theme, HttpServletResponse response) throws IOException {
+        String[] headers;
+
+        // Définir les headers en fonction du thème
+        switch (theme.toLowerCase()) {
+            case "environnement":
+                headers = new String[]{"Nom de la donnée", "Description", "Thème", "Date de publication", "Unité de mesure", "Valeur", "Lieu", "Source"};
+                break;
+            case "sport":
+                headers = new String[]{"Nom de l’événement", "Description", "Thème", "Date de publication", "Type de sport", "Localisation", "Participants", "Résultat"};
+                break;
+            case "finance":
+                headers = new String[]{"Année budgétaire", "Nom bénéficiaire", "Numéro Siret", "Objet du dossier", "Montant voté", "Direction", "Nature de la subvention"};
+                break;
+            default:
+                headers = new String[]{"Nom", "Description", "Thème", "Date de publication"};
+        }
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Template");
@@ -102,12 +116,13 @@ public class DataSetController {
             headerRow.createCell(i).setCellValue(headers[i]);
         }
 
-        // Configuration de la réponse HTTP
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=template_administration&finances.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=template_" + theme + ".xlsx");
 
         workbook.write(response.getOutputStream());
         workbook.close();
     }
+
+
 
 }

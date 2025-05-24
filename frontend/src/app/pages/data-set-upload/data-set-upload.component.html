@@ -7,6 +7,9 @@
     <label for="description">Description :</label>
     <textarea [(ngModel)]="description" name="description" required></textarea><br><br>
 
+    <label for="memberUuid">Organisation Member UUID :</label>
+    <input type="text" [(ngModel)]="dataProviderOrganisationMemberUuid" name="dataProviderOrganisationMemberUuid" required><br><br>
+
     <div class="mb-3">
     <label for="themeUuid" class="form-label">Thème :</label>
     <select [(ngModel)]="themeUuid" name="themeUuid" class="form-select" required>
@@ -17,8 +20,9 @@
     </select>
     </div>
 
-    <label for="memberUuid">Organisation Member UUID :</label>
-    <input type="text" [(ngModel)]="dataProviderOrganisationMemberUuid" name="dataProviderOrganisationMemberUuid" required><br><br>
+    <h3>Télécharger un modèle Excel</h3>
+    <app-file></app-file> 
+
 
     <label for="file">Fichier :</label>
     <input type="file" (change)="onFileSelected($event)" required><br><br>

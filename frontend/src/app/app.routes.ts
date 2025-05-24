@@ -11,6 +11,7 @@ import { DataProviderOrganisationComponent } from './pages/data-provider-organis
 import { DataProviderMemberComponent } from './pages/data-provider-member/data-provider-member.component';
 import { DataSetUploadComponent } from './pages/data-set-upload/data-set-upload.component';
 import { DataSetDownloadComponent } from './pages/data-set-download/data-set-download.component';
+import { FileComponent } from './components/file/file.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
@@ -37,6 +38,7 @@ export const routes: Routes = [
                 children: [
                   { path: '', component: DataSetComponent, data: { breadcrumb: '' } },
                   { path: 'upload', component: DataSetUploadComponent, data: { breadcrumb: 'Upload' } },
+                  { path: 'upload/test', component: FileComponent, data: { breadcrumb: 'Upload/test' } },
                   { path: 'download', component: DataSetDownloadComponent, data: { breadcrumb: 'Download' } },
                 ]  
               },

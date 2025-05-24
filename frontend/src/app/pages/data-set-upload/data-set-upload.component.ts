@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { DataSetThemeRequest } from '../../models/DataSetThemeRequest';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 import { CommonModule } from '@angular/common';
+import { FileComponent } from "../../components/file/file.component";
 
 @Component({
   selector: 'app-data-set-upload',
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule, FileComponent],
   templateUrl: './data-set-upload.component.html',
   styleUrl: './data-set-upload.component.css'
 })

@@ -1,0 +1,6 @@
+<div class="drive-style-container">
+  <div class="file-card" *ngFor="let theme of themes" (click)="downloadTemplate(theme.key)">
+    <img src="../../../assets/images/excel-icon.png" alt="Excel Icon" class="file-icon" />
+    <div class="file-name">{{ theme.name }}</div>
+  </div>
+</div>
