@@ -23,6 +23,7 @@ public class DataSetResponse {
     private Long fileSize;
 
     private Long themeId;
+    private UUID themeUuid;
     private Long dataProviderOrganisationId;
     private Long dataProviderOrganisationMemberId;
 }
