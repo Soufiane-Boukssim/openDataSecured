@@ -116,9 +116,9 @@ public class DataSetServiceImplementation implements DataSetService {
             case "sport":
                 enregistrerDataSetSport(sheet, dataSet.getId());
                 break;
-//            case "finance":
-//                enregistrerDataSetFinance(sheet, dataSet.getId());
-//                break;
+            case "finance":
+                enregistrerDataSetFinance(sheet, dataSet.getId());
+                break;
 //            case "environnement":
 //                enregistrerDataSetEnvironnement(sheet, dataSet.getId());
 //                break;
@@ -126,16 +126,17 @@ public class DataSetServiceImplementation implements DataSetService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thème non reconnu pour insertion des données.");
         }
 
-        //
 
         return dataSetMapper.convertToResponse(dataSet);
     }
+
+
 
     private void enregistrerDataSetSport(Sheet sheet, Long dataSetId) {
 
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
-            if (row == null || isRowEmpty(row)) {
+            if (row == null || isRowEmptySport(row)) {
                 System.out.println("➡️ Ligne vide ignorée à l’index " + i);
                 continue;
             }
@@ -167,7 +168,7 @@ public class DataSetServiceImplementation implements DataSetService {
         }
     }
 
-    private boolean isRowEmpty(Row row) {
+    private boolean isRowEmptySport(Row row) {
         if (row == null) return true;
         for (int i = 0; i < 8; i++) {
             Cell cell = row.getCell(i);
@@ -202,10 +203,73 @@ public class DataSetServiceImplementation implements DataSetService {
 
 
 
+    // 2. Ajoutez cette nouvelle méthode pour traiter les données financières :
+    private void enregistrerDataSetFinance(Sheet sheet, Long dataSetId) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null || isRowEmptyFinance(row)) {
+                System.out.println("➡️ Ligne vide ignorée à l'index " + i);
+                continue;
+            }
+
+            try {
+                DataSetFinance finance = new DataSetFinance();
+
+                finance.setAnneeBudgetaire(getStringValue(row.getCell(0)));
+                finance.setNomBeneficiaire(getStringValue(row.getCell(1)));
+                finance.setNumeroSiret(getStringValue(row.getCell(2)));
+                finance.setObjetDossier(getStringValue(row.getCell(3)));
+
+                // Gestion du montant voté (colonne 4)
+                Cell montantCell = row.getCell(4);
+                if (montantCell != null) {
+                    if (montantCell.getCellType() == CellType.NUMERIC) {
+                        finance.setMontantVote(montantCell.getNumericCellValue());
+                    } else if (montantCell.getCellType() == CellType.STRING) {
+                        try {
+                            String montantStr = montantCell.getStringCellValue().trim();
+                            if (!montantStr.isEmpty()) {
+                                // Nettoyer la chaîne (enlever les espaces, virgules, etc.)
+                                montantStr = montantStr.replaceAll("[\\s,]", "").replace(",", ".");
+                                finance.setMontantVote(Double.parseDouble(montantStr));
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("⚠️ Montant invalide à la ligne " + i + ": " + montantCell.getStringCellValue());
+                            finance.setMontantVote(null);
+                        }
+                    }
+                }
+
+                finance.setDirection(getStringValue(row.getCell(5)));
+                finance.setNatureSubvention(getStringValue(row.getCell(6)));
+                finance.setGid(dataSetId); // lien avec DataSet
+
+                dataSetFinanceRepository.save(finance);
+
+            } catch (Exception e) {
+                System.err.println("❌ Erreur à la ligne " + i + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 
 
-
-
+    // 3. Méthode pour vérifier si une ligne finance est vide :
+    private boolean isRowEmptyFinance(Row row) {
+        if (row == null) return true;
+        for (int i = 0; i < 7; i++) { // 7 colonnes pour finance
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                if (cell.getCellType() == CellType.STRING && !cell.getStringCellValue().trim().isEmpty()) {
+                    return false;
+                }
+                if (cell.getCellType() != CellType.STRING) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 
 
