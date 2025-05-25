@@ -1,16 +1,13 @@
 package com.soufiane.open_data.services.dataSet;
 
 import com.soufiane.open_data.dtos.dataSet.DataSetResponse;
-import com.soufiane.open_data.entities.DataProviderOrganisationMember;
-import com.soufiane.open_data.entities.DataSet;
-import com.soufiane.open_data.entities.DataSetTheme;
+import com.soufiane.open_data.entities.*;
 import com.soufiane.open_data.mappers.DataSetMapper;
-import com.soufiane.open_data.repositories.DataProviderOrganisationMemberRepository;
-import com.soufiane.open_data.repositories.DataProviderOrganisationRepository;
-import com.soufiane.open_data.repositories.DataSetRepository;
-import com.soufiane.open_data.repositories.DataSetThemeRepository;
+import com.soufiane.open_data.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,7 +18,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +37,8 @@ public class DataSetServiceImplementation implements DataSetService {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir").replace("\\", "/") + "/uploads/documents/datasets/";
     private static final String fileUrl = "http://localhost:8080/api/datasets/upload/file/";
+    private final DataSetSportRepository dataSetSportRepository;
+    private final DataSetFinanceRepository dataSetFinanceRepository;
 
     @Override
     public List<DataSetResponse> getAllDataSet() {
@@ -104,8 +106,111 @@ public class DataSetServiceImplementation implements DataSetService {
         ensureUploadDirectoryExists();
         DataSet dataSet = createDataSet(name, description, theme, provider, file);
         dataSet= dataSetRepository.save(dataSet);
+
+        //
+        // Étape 2 : lire le fichier Excel
+        Workbook workbook = new XSSFWorkbook(file.getInputStream());
+        Sheet sheet = workbook.getSheetAt(0);
+        // Étape 3 : insérer les lignes dans la bonne table
+        switch (theme.getName().toLowerCase()) {
+            case "sport":
+                enregistrerDataSetSport(sheet, dataSet.getId());
+                break;
+//            case "finance":
+//                enregistrerDataSetFinance(sheet, dataSet.getId());
+//                break;
+//            case "environnement":
+//                enregistrerDataSetEnvironnement(sheet, dataSet.getId());
+//                break;
+            default:
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thème non reconnu pour insertion des données.");
+        }
+
+        //
+
         return dataSetMapper.convertToResponse(dataSet);
     }
+
+    private void enregistrerDataSetSport(Sheet sheet, Long dataSetId) {
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null || isRowEmpty(row)) {
+                System.out.println("➡️ Ligne vide ignorée à l’index " + i);
+                continue;
+            }
+
+            try {
+                DataSetSport sport = new DataSetSport();
+
+                sport.setNomEvenement(getStringValue(row.getCell(0)));
+                sport.setDescription(getStringValue(row.getCell(1)));
+                sport.setTheme(getStringValue(row.getCell(2)));
+
+                Date date = row.getCell(3).getDateCellValue();
+                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                sport.setDatePublication(localDate);
+
+                sport.setTypeSport(getStringValue(row.getCell(4)));
+                sport.setLocalisation(getStringValue(row.getCell(5)));
+                sport.setParticipants(getStringValue(row.getCell(6)));
+                sport.setResultat(getStringValue(row.getCell(7)));
+
+                sport.setGid(dataSetId); // lien avec DataSet
+
+                dataSetSportRepository.save(sport);
+
+            } catch (Exception e) {
+                System.err.println("❌ Erreur à la ligne " + i + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean isRowEmpty(Row row) {
+        if (row == null) return true;
+        for (int i = 0; i < 8; i++) {
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                if (cell.getCellType() == CellType.STRING && !cell.getStringCellValue().trim().isEmpty()) {
+                    return false;
+                }
+                if (cell.getCellType() != CellType.STRING) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private String getStringValue(Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                return String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return null;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public DataSetResponse updateDataSetById(UUID uuid, String name, String description, UUID themeUuid, UUID dataProviderOrganisationMemberUuid, MultipartFile file) throws IOException {

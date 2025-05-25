@@ -1,17 +1,15 @@
 package com.soufiane.open_data.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class DataSet {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) //@JsonIgnore
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private UUID uuid;
@@ -36,7 +34,7 @@ public class DataSet {
     private String file;
     private String fileType;
     private Long fileSize;
-    @ManyToOne @JoinColumn(name = "theme_id") //@JsonIgnoreProperties({"id", "name", "description", "createdBy", "updatedBy", "createdOn", "updatedOn", "deleted", "iconPath", "datasets","base64Icon", "icon"})
+    @ManyToOne @JoinColumn(name = "theme_id")
     private DataSetTheme theme;
 
     // Organisation propriétaire
@@ -46,5 +44,14 @@ public class DataSet {
     // Utilisateur qui a créé ce dataset
     @ManyToOne @JoinColumn(name = "data_provider_user_id")
     private DataProviderOrganisationMember dataProviderOrganisationMember;
+
+    @OneToMany @JoinColumn(name = "gid", referencedColumnName = "id")
+    private List<DataSetSport> dataSetSports;
+
+    @OneToMany @JoinColumn(name = "gid", referencedColumnName = "id")
+    private List<DataSetFinance> dataSetFinances;
+
+    @OneToMany @JoinColumn(name = "gid", referencedColumnName = "id")
+    private List<DataSetEnvironnement> dataSetEnvironnements;
 
 }
