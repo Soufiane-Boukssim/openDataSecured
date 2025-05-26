@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DataSetResponse } from '../../models/DataSetResponse';
+import { DataSetDownload } from '../../models/DataSetDownload';
 import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 
@@ -13,8 +13,10 @@ import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.
 })
 
 export class DataSetDownloadComponent {
-  datasets: DataSetResponse[] = [];
-  filteredDatasets: DataSetResponse[] = [];
+  searchTerm: string = '';
+
+  datasets: DataSetDownload[] = [];
+  filteredDatasets: DataSetDownload[] = [];
   themes: any[] = [];
 
   constructor(
@@ -55,15 +57,27 @@ export class DataSetDownloadComponent {
     });
   }
 
-  viewDataset(dataset: DataSetResponse): void {
+  applyFilter(): void {
+    if (!this.searchTerm) {
+      this.filteredDatasets = [...this.datasets]; // Affiche tous les datasets si la recherche est vide
+    } else {
+      this.filteredDatasets = this.datasets.filter(dataset =>
+        dataset.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        dataset.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+
+
+  viewDataset(dataset: DataSetDownload): void {
     console.log('Viewing dataset:', dataset);
   }
 
-  updateDataset(dataset: DataSetResponse): void {
+  updateDataset(dataset: DataSetDownload): void {
     console.log('Updating dataset:', dataset);
   }
 
-  deleteDataset(dataset: DataSetResponse): void {
+  deleteDataset(dataset: DataSetDownload): void {
     const confirmed = confirm(`Voulez-vous vraiment supprimer "${dataset.name}" ?`);
     if (confirmed) {
       this.dataSetService.deleteDataset(dataset.uuid).subscribe({

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DataSetResponse } from '../../models/DataSetResponse';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { DataSetDownload } from '../../models/DataSetDownload';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,8 @@ export class DataSetDownloadService {
   
   constructor(private http: HttpClient) {}
 
-  getAllDatasets(): Observable<DataSetResponse[]> {
-    return this.http.get<DataSetResponse[]>(`${this.apiUrl}/get/all`);
+  getAllDatasets(): Observable<DataSetDownload[]> {
+    return this.http.get<DataSetDownload[]>(`${this.apiUrl}/get/all`);
   }
 
   deleteDataset(id: string): Observable<boolean> {

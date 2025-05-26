@@ -1,7 +1,7 @@
 import { SimplifiedDataProviderOrganisationMemberResponse } from "./SimplifiedDataProviderOrganisationMemberResponse";
 import { SimplifiedDataProviderOrganisationResponse } from "./SimplifiedDataProviderOrganisationResponse";
 
-export interface DataSetResponse {
+export interface DataSetDownload {
   uuid: string;
   name: string;
   description: string;

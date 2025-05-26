@@ -16,3 +16,18 @@
 .card:hover {
   transform: translateY(-5px);
 }
+
+
+/* Style pour la barre de recherche */
+input[type="search"] {
+  max-width: 300px;
+  border-radius: 25px;
+  padding-left: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+input[type="search"]:focus {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+  border-color: #007bff;
+  outline: none;
+}
