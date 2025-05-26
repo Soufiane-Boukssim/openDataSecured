@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class DataSetResponse {
+    private Long id; //pour gid pour DataSetSport, DataSetFinance, DataSetEnvironment
     private UUID uuid;
     private String name;
     private String description;
