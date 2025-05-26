@@ -1,6 +1,9 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
   <div class="col" *ngFor="let dataset of filteredDatasets">
     <div class="card h-100 shadow-sm">
+
+
+
       <div class="card-body">
         <h5 class="card-title">{{ dataset.name }}</h5>
         <p class="card-text">
@@ -8,9 +11,15 @@
         </p>
         <ul class="list-unstyled">
           <li><strong>Thème:</strong> {{ dataset.themeName }}</li>
+          <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
           <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
+          <li><strong>Organisation ID :</strong> {{ dataset.dataProviderOrganisationId }}</li>
+          <li><strong>Membre Organisation ID :</strong> {{ dataset.dataProviderOrganisationMemberId }}</li>
         </ul>
       </div>
+
+
+
       <div class="card-footer d-flex justify-content-between bg-white border-top-0">
         <button class="btn btn-info btn-sm" (click)="viewDataset(dataset)">
           <i class="bi bi-eye"></i> View
@@ -22,6 +31,9 @@
           <i class="bi bi-trash"></i> Delete
         </button>
       </div>
+
+
+
     </div>
   </div>
 </div>
