@@ -9,6 +9,6 @@ export interface DataProviderOrganisationMemberRequest {
   updatedBy: string;
   createdOn: Date;
   updatedOn: Date;
-  dataProviderOrganisation:DataProviderOrganisationRequest //uuid et name
+  dataProviderOrganisation?:DataProviderOrganisationRequest //uuid et name
 }
 

@@ -14,7 +14,6 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-data-provider-member',
-  standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './data-provider-member.component.html',
   styleUrl: './data-provider-member.component.css'
