@@ -52,6 +52,6 @@ public class DataSet {
     private List<DataSetFinance> dataSetFinances;
 
     @OneToMany @JoinColumn(name = "gid", referencedColumnName = "id")
-    private List<DataSetEnvironnement> dataSetEnvironnements;
+    private List<DataSetEnvironment> dataSetEnvironments;
 
 }

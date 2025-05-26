@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 
-@Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class DataSetEnvironment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +19,7 @@ public class DataSetEnvironment {
     private String theme;
     private LocalDate dateDePublication;
     private String uniteDeMesure;
-    private double valeur;
+    private Double valeur;
     private String lieu;
     private String source;
     private Long gid;

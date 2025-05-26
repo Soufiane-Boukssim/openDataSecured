@@ -39,6 +39,7 @@ public class DataSetServiceImplementation implements DataSetService {
     private static final String fileUrl = "http://localhost:8080/api/datasets/upload/file/";
     private final DataSetSportRepository dataSetSportRepository;
     private final DataSetFinanceRepository dataSetFinanceRepository;
+    private final DataSetEnvironmentRepository dataSetEnvironmentRepository;
 
     @Override
     public List<DataSetResponse> getAllDataSet() {
@@ -119,9 +120,9 @@ public class DataSetServiceImplementation implements DataSetService {
             case "finance":
                 enregistrerDataSetFinance(sheet, dataSet.getId());
                 break;
-//            case "environnement":
-//                enregistrerDataSetEnvironnement(sheet, dataSet.getId());
-//                break;
+            case "environnement":
+                enregistrerDataSetEnvironnement(sheet, dataSet.getId());
+                break;
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thème non reconnu pour insertion des données.");
         }
@@ -270,6 +271,87 @@ public class DataSetServiceImplementation implements DataSetService {
         }
         return true;
     }
+
+
+    ///////////////////3/////////////////
+    private void enregistrerDataSetEnvironnement(Sheet sheet, Long dataSetId) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null || isRowEmptyEnvironment(row)) {
+                System.out.println("➡️ Ligne vide ignorée à l’index " + i);
+                continue;
+            }
+
+            try {
+                DataSetEnvironment environment = new DataSetEnvironment();
+
+                environment.setNomDeLaDonnee(getStringValue(row.getCell(0)));
+                environment.setDescription(getStringValue(row.getCell(1)));
+                environment.setTheme(getStringValue(row.getCell(2)));
+
+                Date date = row.getCell(3).getDateCellValue();
+                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                environment.setDateDePublication(localDate);
+
+                environment.setUniteDeMesure(getStringValue(row.getCell(4)));
+
+                // Gestion de la valeur (colonne 5)
+                Cell valeurCell = row.getCell(5);
+                if (valeurCell != null) {
+                    if (valeurCell.getCellType() == CellType.NUMERIC) {
+                        environment.setValeur(valeurCell.getNumericCellValue());
+                    } else if (valeurCell.getCellType() == CellType.STRING) {
+                        try {
+                            String valeurStr = valeurCell.getStringCellValue().trim();
+                            if (!valeurStr.isEmpty()) {
+                                // Nettoyer la chaîne (enlever les espaces, virgules, etc.)
+                                valeurStr = valeurStr.replaceAll("[\\s,]", "").replace(",", ".");
+                                environment.setValeur(Double.parseDouble(valeurStr));
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("⚠️ Valeur invalide à la ligne " + i + ": " + valeurCell.getStringCellValue());
+                            environment.setValeur(null);
+                        }
+                    }
+                }
+
+                environment.setLieu(getStringValue(row.getCell(6)));
+                environment.setSource(getStringValue(row.getCell(7)));
+
+                environment.setGid(dataSetId); // lien avec DataSet
+
+                dataSetEnvironmentRepository.save(environment);
+
+            } catch (Exception e) {
+                System.err.println("❌ Erreur à la ligne " + i + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+
+    private boolean isRowEmptyEnvironment(Row row) {
+        if (row == null) return true;
+        for (int i = 0; i < 8; i++) { // 7 colonnes pour finance
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                if (cell.getCellType() == CellType.STRING && !cell.getStringCellValue().trim().isEmpty()) {
+                    return false;
+                }
+                if (cell.getCellType() != CellType.STRING) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+
+
 
 
 
