@@ -1,5 +1,7 @@
 package com.soufiane.open_data.dtos.dataSet;
 
+import com.soufiane.open_data.dtos.dataProviderOrganisation.SimplifiedDataProviderOrganisationResponse;
+import com.soufiane.open_data.dtos.dataProviderOrganisationMember.SimplifiedDataProviderOrganisationMemberResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,6 @@ public class DataSetResponse {
 
     private Long themeId;
     private UUID themeUuid;
-    private Long dataProviderOrganisationId;
-    private Long dataProviderOrganisationMemberId;
+    private SimplifiedDataProviderOrganisationResponse dataProviderOrganisation;
+    private SimplifiedDataProviderOrganisationMemberResponse dataProviderOrganisationMember;
 }

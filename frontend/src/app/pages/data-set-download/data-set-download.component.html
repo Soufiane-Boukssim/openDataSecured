@@ -10,11 +10,17 @@
           {{ dataset.description.length > 100 ? (dataset.description | slice:0:100) + '...' : dataset.description }}
         </p>
         <ul class="list-unstyled">
-          <li><strong>Thème:</strong> {{ dataset.themeName }}</li>
+          <li><strong>Thème:</strong> {{ dataset.name }}</li>
           <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
           <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
-          <li><strong>Organisation ID :</strong> {{ dataset.dataProviderOrganisationId }}</li>
-          <li><strong>Membre Organisation ID :</strong> {{ dataset.dataProviderOrganisationMemberId }}</li>
+          <li>
+            <strong>Organisation :</strong>
+             {{ dataset.dataProviderOrganisation.name }}
+          </li>
+          <li>
+            <strong>Membre Organisation :</strong> 
+            {{ dataset.dataProviderOrganisationMember.email }}
+          </li>
         </ul>
       </div>
 

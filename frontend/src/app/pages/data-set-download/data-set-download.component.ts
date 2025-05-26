@@ -14,7 +14,7 @@ import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.
 
 export class DataSetDownloadComponent {
   datasets: DataSetResponse[] = [];
-  filteredDatasets: any[] = [];
+  filteredDatasets: DataSetResponse[] = [];
   themes: any[] = [];
 
   constructor(

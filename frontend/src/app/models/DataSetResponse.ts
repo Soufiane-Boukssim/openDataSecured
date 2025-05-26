@@ -1,3 +1,6 @@
+import { SimplifiedDataProviderOrganisationMemberResponse } from "./SimplifiedDataProviderOrganisationMemberResponse";
+import { SimplifiedDataProviderOrganisationResponse } from "./SimplifiedDataProviderOrganisationResponse";
+
 export interface DataSetResponse {
   uuid: string;
   name: string;
@@ -11,7 +14,7 @@ export interface DataSetResponse {
   fileType: string;
   fileSize: number;
   themeId: number;
-  themeUuid: string;  // <-- Ajouté
-  dataProviderOrganisationId: number;
-  dataProviderOrganisationMemberId: number;
+  themeUuid: string;  
+  dataProviderOrganisation: SimplifiedDataProviderOrganisationResponse;
+  dataProviderOrganisationMember: SimplifiedDataProviderOrganisationMemberResponse;
 }
