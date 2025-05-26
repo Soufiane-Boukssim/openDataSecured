@@ -31,3 +31,26 @@ input[type="search"]:focus {
   border-color: #007bff;
   outline: none;
 }
+
+/* Par défaut (mobile): 1 colonne */
+.col-custom {
+  flex: 0 0 100%;
+  max-width: 100%;
+  padding: 0.5rem; /* Ajoute un peu d'espace entre les cartes */
+}
+
+/* Dès 800px: 2 colonnes */
+@media (min-width: 800px) {
+  .col-custom {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Dès 1200px: 3 colonnes */
+@media (min-width: 1200px) {
+  .col-custom {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+}
