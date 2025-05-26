@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataSetEnvironnement {
+public class DataSetEnvironment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nomDeLaDonnee;
@@ -26,5 +26,6 @@ public class DataSetEnvironnement {
     private double valeur;
     private String lieu;
     private String source;
-
+    private Long gid;
+    private boolean deleted = false;
 }
