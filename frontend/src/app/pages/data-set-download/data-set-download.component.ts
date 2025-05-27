@@ -26,6 +26,7 @@ export class DataSetDownloadComponent {
     name: '',
     description: '',
     themeUuid: '',
+    dataProviderOrganisationMemberUuid: '', // nouveau champ ajouté
     file: null as File | null
   };
   isUpdating = false;
@@ -84,7 +85,8 @@ export class DataSetDownloadComponent {
       name: dataset.name,
       description: dataset.description,
       themeUuid: dataset.dataSetTheme.uuid,
-      file: null
+      file: null,
+      dataProviderOrganisationMemberUuid: ''
     };
 
     const modal = new bootstrap.Modal(document.getElementById('updateModal'));
@@ -168,7 +170,8 @@ export class DataSetDownloadComponent {
       name: '',
       description: '',
       themeUuid: '',
-      file: null
+      file: null,
+      dataProviderOrganisationMemberUuid: '', // nouveau champ ajouté
     };
     this.selectedDataset = null;
   }

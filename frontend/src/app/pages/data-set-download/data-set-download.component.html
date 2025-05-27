@@ -117,6 +117,21 @@
           </div>
           
           <div class="mb-3">
+            <label for="updateMember" class="form-label">UUID du membre de l'organisation</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="updateMember" 
+              [(ngModel)]="updateData.dataProviderOrganisationMemberUuid" 
+              name="updateMember"
+              placeholder="UUID du membre"
+              required
+            />
+          </div>
+
+
+
+          <div class="mb-3">
             <label for="updateFile" class="form-label">Nouveau fichier Excel (optionnel)</label>
             <input 
               type="file" 
