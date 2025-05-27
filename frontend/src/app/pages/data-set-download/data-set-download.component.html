@@ -12,14 +12,9 @@
     />
   </div>
 
-
-
-
-
-<div class="row">  
-  <div class="col-custom" *ngFor="let dataset of filteredDatasets">
+<div class="row">
+  <div class="col-12 col-custom col-xl-4" *ngFor="let dataset of filteredDatasets">
     <div class="card h-100 shadow-sm">
-
       <div class="card-body">
         <h5 class="card-title">{{ dataset.name }}</h5>
         <p class="card-text">
@@ -29,29 +24,97 @@
           <li><strong>Thème:</strong> {{ dataset.name }}</li>
           <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
           <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
-          <li>
-            <strong>Organisation :</strong>
-             {{ dataset.dataProviderOrganisation.name }}
-          </li>
-          <li>
-            <strong>Membre Organisation :</strong> 
-            {{ dataset.dataProviderOrganisationMember.email }}
-          </li>
+          <li><strong>Organisation :</strong> {{ dataset.dataProviderOrganisation.name }}</li>
+          <li><strong>Membre Organisation :</strong> {{ dataset.dataProviderOrganisationMember.email }}</li>
         </ul>
       </div>
 
       <div class="card-footer d-flex justify-content-between bg-white border-top-0">
-        <button class="btn btn-info btn-sm" (click)="viewDataset(dataset)">
+        <button class="btn btn-info btn-sm" (click)="viewDataset(dataset.uuid)">
           <i class="bi bi-eye"></i> View
         </button>
         <button class="btn btn-warning btn-sm" (click)="updateDataset(dataset)">
           <i class="bi bi-pencil"></i> Update
         </button>
-        <button class="btn btn-danger btn-sm" (click)="deleteDataset(dataset)">
+        <button type="button" class="btn btn-danger btn-sm" (click)="openDeletePopup(dataset)">
           <i class="bi bi-trash"></i> Delete
         </button>
       </div>
-
     </div>
   </div>
 </div>
+
+<!-- Modal de confirmation -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation de suppression</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Voulez-vous vraiment supprimer ce data set ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="themeModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="themeModalLabel">Détails du Thème</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedDataset">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <strong>Nom du Dataset :</strong> {{ selectedDataset.name }}
+          </li>
+          <li class="list-group-item">
+            <strong>Description :</strong><br />
+            {{ selectedDataset.description }}
+          </li>
+          <li class="list-group-item">
+            <strong>Thème :</strong> {{ selectedDataset.themeId }}
+          </li>
+          <li class="list-group-item">
+            <strong>Créé par :</strong> {{ selectedDataset.createdBy }}
+          </li>
+          <li class="list-group-item">
+            <strong>Date de création :</strong> {{ selectedDataset.createdOn | date:'fullDate' }}
+          </li>
+          <li class="list-group-item">
+            <strong>Modifié par :</strong> {{ selectedDataset.updatedBy }}
+          </li>
+          <li class="list-group-item">
+            <strong>Date de modification :</strong> {{ selectedDataset.updatedOn | date:'fullDate' }}
+          </li>
+          <li class="list-group-item">
+            <strong>Organisation :</strong> {{ selectedDataset.dataProviderOrganisation.name }}
+          </li>
+          <li class="list-group-item">
+            <strong>Membre Organisation :</strong> {{ selectedDataset.dataProviderOrganisationMember.email }}
+          </li>
+          <li class="list-group-item">
+            <strong>UUID :</strong><br />
+            <code>{{ selectedDataset.uuid }}</code>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

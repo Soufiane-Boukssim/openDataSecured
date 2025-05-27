@@ -2,6 +2,7 @@ package com.soufiane.open_data.dtos.dataSet;
 
 import com.soufiane.open_data.dtos.dataProviderOrganisation.SimplifiedDataProviderOrganisationResponse;
 import com.soufiane.open_data.dtos.dataProviderOrganisationMember.SimplifiedDataProviderOrganisationMemberResponse;
+import com.soufiane.open_data.dtos.dataSetTheme.SimplifiedDataSetThemeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,7 @@ public class DataSetResponse {
     private String fileType;
     private Long fileSize;
 
-    private Long themeId;
-    private UUID themeUuid;
+    private SimplifiedDataSetThemeResponse dataSetTheme;
     private SimplifiedDataProviderOrganisationResponse dataProviderOrganisation;
     private SimplifiedDataProviderOrganisationMemberResponse dataProviderOrganisationMember;
 }

@@ -36,7 +36,7 @@ input[type="search"]:focus {
 .col-custom {
   flex: 0 0 100%;
   max-width: 100%;
-  padding: 0.5rem; /* Ajoute un peu d'espace entre les cartes */
+  /* padding: 0.5rem; Ajoute un peu d'espace entre les cartes */
 }
 
 /* Dès 800px: 2 colonnes */

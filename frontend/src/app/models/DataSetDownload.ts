@@ -1,5 +1,6 @@
 import { SimplifiedDataProviderOrganisationMemberResponse } from "./SimplifiedDataProviderOrganisationMemberResponse";
 import { SimplifiedDataProviderOrganisationResponse } from "./SimplifiedDataProviderOrganisationResponse";
+import { SimplifiedDataSetThemeResponse } from "./SimplifiedDataSetThemeResponse";
 
 export interface DataSetDownload {
   uuid: string;
@@ -15,6 +16,7 @@ export interface DataSetDownload {
   fileSize: number;
   themeId: number;
   themeUuid: string;  
+  theme: SimplifiedDataSetThemeResponse;
   dataProviderOrganisation: SimplifiedDataProviderOrganisationResponse;
   dataProviderOrganisationMember: SimplifiedDataProviderOrganisationMemberResponse;
 }

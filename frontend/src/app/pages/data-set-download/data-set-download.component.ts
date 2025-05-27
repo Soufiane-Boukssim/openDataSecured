@@ -5,6 +5,10 @@ import { DataSetDownload } from '../../models/DataSetDownload';
 import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 
+
+declare var bootstrap: any; // Important si tu utilises Bootstrap 5 sans TypeScript support
+
+
 @Component({
   selector: 'app-data-set-download',
   imports: [FormsModule,CommonModule],
@@ -16,6 +20,8 @@ export class DataSetDownloadComponent {
   searchTerm: string = '';
 
   datasets: DataSetDownload[] = [];
+  selectedDataset: DataSetDownload | null = null;
+  
   filteredDatasets: DataSetDownload[] = [];
   themes: any[] = [];
 
@@ -69,33 +75,65 @@ export class DataSetDownloadComponent {
   }
 
 
-  viewDataset(dataset: DataSetDownload): void {
-    console.log('Viewing dataset:', dataset);
+  viewDataset(uuid: string) {
+    const found = this.datasets.find(d => d.uuid === uuid);
+    if (found) {
+      this.selectedDataset = found;
+      const modalElement = document.getElementById('themeModal');
+      if (modalElement) {
+        const modal = new (window as any).bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    }
   }
 
   updateDataset(dataset: DataSetDownload): void {
     console.log('Updating dataset:', dataset);
   }
 
-  deleteDataset(dataset: DataSetDownload): void {
-    const confirmed = confirm(`Voulez-vous vraiment supprimer "${dataset.name}" ?`);
-    if (confirmed) {
-      this.dataSetService.deleteDataset(dataset.uuid).subscribe({
-        next: (success) => {
-          if (success) {
-            // Supprimer localement de la liste affichée
-            this.filteredDatasets = this.filteredDatasets.filter(d => d.uuid !== dataset.uuid);
-            alert(`Le dataset "${dataset.name}" a été supprimé.`);
-          } else {
-            alert('Échec de la suppression.');
-          }
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression', err);
-          alert('Erreur lors de la suppression du dataset.');
-        }
-      });
+
+
+
+
+//   selectedDataset: DataSetDownload | null = null;
+
+
+  openDeletePopup(dataset: DataSetDownload): void {
+    this.selectedDataset = dataset;
+
+    const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    modal.show();
+  }
+
+confirmDelete(): void {
+  if (!this.selectedDataset) return;
+
+  const datasetToDelete = this.selectedDataset;
+
+  this.dataSetService.deleteDataset(datasetToDelete.uuid).subscribe({
+    next: (success) => {
+      if (success) {
+        this.filteredDatasets = this.filteredDatasets.filter(
+          d => d.uuid !== datasetToDelete.uuid
+        );
+        alert(`Le dataset "${datasetToDelete.uuid}" a été supprimé.`);
+      } else {
+        alert('Échec de la suppression.');
+      }
+      this.selectedDataset = null;
+    },
+    error: (err) => {
+      console.error('Erreur lors de la suppression', err);
+      alert('Erreur lors de la suppression du dataset.');
+      this.selectedDataset = null;
     }
-  }
+  });
+
+  // Fermer le modal
+  const modalElement = document.getElementById('confirmDeleteModal');
+  const modalInstance = bootstrap.Modal.getInstance(modalElement);
+  modalInstance?.hide(); // Ajoute aussi ?. ici pour éviter une erreur si le modal est null
+}
+
 
 }
