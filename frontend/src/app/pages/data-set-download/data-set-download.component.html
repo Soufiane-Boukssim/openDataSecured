@@ -120,6 +120,15 @@
           <app-file [selectedThemeUuid]="selectedDataset.dataSetTheme.uuid"></app-file>
         </div>
 
+
+<div class="mt-3" *ngIf="selectedDataset?.id">
+  <h5>Télécharger le modèle Excel par Dataset ID</h5>
+  <button class="btn btn-primary" (click)="downloadTemplate(selectedDataset.id)">
+    Télécharger le modèle Excel du Dataset
+  </button>
+</div>
+
+
         </ul>
       </div>
 

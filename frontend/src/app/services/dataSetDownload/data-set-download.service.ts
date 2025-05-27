@@ -21,7 +21,16 @@ export class DataSetDownloadService {
   }
 
   getBaseDownloadUrl(): string {
-  return `${this.apiUrl}/download/byId`;
-}
+    return `${this.apiUrl}/download/byId`;
+  }
+
+
+  downloadTemplate(id: number) {
+    return this.http.get(`${this.apiUrl}/${id}/download-template`, {
+      responseType: 'blob', 
+      observe: 'response' 
+    });
+  }
+
 
 }

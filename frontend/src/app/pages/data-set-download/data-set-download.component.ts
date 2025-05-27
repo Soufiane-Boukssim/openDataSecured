@@ -118,9 +118,36 @@ export class DataSetDownloadComponent {
   }
 
 
-downloadFile(dataset: DataSetDownload): void {
-  const downloadUrl = `${this.dataSetService.getBaseDownloadUrl()}/${dataset.uuid}`;
-  window.open(downloadUrl, '_blank');
+  downloadFile(dataset: DataSetDownload): void {
+    const downloadUrl = `${this.dataSetService.getBaseDownloadUrl()}/${dataset.uuid}`;
+    window.open(downloadUrl, '_blank');
+  }
+
+
+  downloadTemplate(datasetId: number) {
+    this.dataSetService.downloadTemplate(datasetId).subscribe(response => {
+      const blob = new Blob([response.body!], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      // Extraire le nom depuis le header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'template.xlsx';
+      if (contentDisposition) {
+        const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1];
+        }
+      }
+
+      // Télécharger le fichier
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
 }
 
-}
