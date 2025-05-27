@@ -47,18 +47,21 @@ export class DataSetDownloadComponent {
       this.dataSetService.getAllDatasets().subscribe(datasets => {
         console.log('Datasets récupérés du backend :', datasets); // 👈 Facultatif
 
-        this.datasets = datasets.map(dataset => {
-          // Affiche chaque correspondance tentative
-          const matchedTheme = this.themes.find(t => t.uuid === dataset.themeUuid);
-          console.log(`Dataset [${dataset.name}] - themeId: ${dataset.themeId} - theme trouvé:`, matchedTheme);
+        // this.datasets = datasets.map(dataset => {
+        //   // Affiche chaque correspondance tentative
+        //   const matchedTheme = this.themes.find(t => t.uuid === dataset.themeUuid);
+        //   console.log(`Dataset [${dataset.name}] - themeId: ${dataset.themeId} - theme trouvé:`, matchedTheme);
 
-          return {
-            ...dataset,
-            themeName: matchedTheme ? matchedTheme.name : 'Inconnu'
-          };
-        });
-
+        //   return {
+        //     ...dataset,
+        //     themeName: matchedTheme ? matchedTheme.name : 'Inconnu'
+        //   };
+        // });
+        this.datasets = datasets;
         this.filteredDatasets = [...this.datasets];
+
+
+        // this.filteredDatasets = [...this.datasets];
       });
     });
   }
@@ -135,5 +138,10 @@ confirmDelete(): void {
   modalInstance?.hide(); // Ajoute aussi ?. ici pour éviter une erreur si le modal est null
 }
 
+
+downloadFile(dataset: DataSetDownload): void {
+  const downloadUrl = `${this.dataSetService.getBaseDownloadUrl()}/${dataset.uuid}`;
+  window.open(downloadUrl, '_blank');
+}
 
 }

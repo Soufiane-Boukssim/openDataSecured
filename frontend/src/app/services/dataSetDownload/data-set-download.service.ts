@@ -20,4 +20,8 @@ export class DataSetDownloadService {
     return this.http.delete<boolean>(`${this.apiUrl}/delete/byId/${id}`);
   }
 
+  getBaseDownloadUrl(): string {
+  return `${this.apiUrl}/download/byId`;
+}
+
 }
