@@ -20,11 +20,6 @@ export class DataSetDownloadService {
     return this.http.delete<boolean>(`${this.apiUrl}/delete/byId/${id}`);
   }
 
-  getBaseDownloadUrl(): string {
-    return `${this.apiUrl}/download/byId`;
-  }
-
-
   downloadTemplate(id: number) {
     return this.http.get(`${this.apiUrl}/${id}/download-template`, {
       responseType: 'blob', 

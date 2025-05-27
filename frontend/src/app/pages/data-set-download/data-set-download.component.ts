@@ -7,7 +7,7 @@ import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.
 import { FileComponent } from '../../components/file/file.component';
 
 
-declare var bootstrap: any; // Important si tu utilises Bootstrap 5 sans TypeScript support
+declare var bootstrap: any; 
 
 
 @Component({
@@ -116,13 +116,6 @@ export class DataSetDownloadComponent {
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance?.hide(); 
   }
-
-
-  downloadFile(dataset: DataSetDownload): void {
-    const downloadUrl = `${this.dataSetService.getBaseDownloadUrl()}/${dataset.uuid}`;
-    window.open(downloadUrl, '_blank');
-  }
-
 
   downloadTemplate(datasetId: number) {
     this.dataSetService.downloadTemplate(datasetId).subscribe(response => {
