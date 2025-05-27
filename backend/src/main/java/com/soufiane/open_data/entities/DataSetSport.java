@@ -23,7 +23,5 @@ public class DataSetSport {
     private String participants;
     private String resultat;
     private Long gid;
-
     private boolean deleted = false;
-
 }

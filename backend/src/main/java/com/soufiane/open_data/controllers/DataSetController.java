@@ -16,6 +16,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.ByteArrayInputStream;
+
+
+
 @RestController @RequiredArgsConstructor @RequestMapping("/api/datasets")
 public class DataSetController {
 
@@ -124,5 +134,20 @@ public class DataSetController {
     }
 
 
+//test
 
+    @GetMapping("/{id}/download-template")
+    public ResponseEntity<Resource> downloadFilledTemplate(@PathVariable Long id) throws IOException {
+        ByteArrayInputStream filledExcel = dataSetService.generateTemplateWithData(id);
+
+        InputStreamResource resource = new InputStreamResource(filledExcel);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dataset_" + id + ".xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(resource);
+    }
+
+
+//test
 }

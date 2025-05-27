@@ -37,11 +37,9 @@ public class DataSet {
     @ManyToOne @JoinColumn(name = "theme_id")
     private DataSetTheme theme;
 
-    // Organisation propriétaire
     @ManyToOne @JoinColumn(name = "data_provider_organisation_id")
     private DataProviderOrganisation dataProviderOrganisation;
 
-    // Utilisateur qui a créé ce dataset
     @ManyToOne @JoinColumn(name = "data_provider_user_id")
     private DataProviderOrganisationMember dataProviderOrganisationMember;
 

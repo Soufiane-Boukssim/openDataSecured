@@ -2,6 +2,7 @@ package com.soufiane.open_data.services.dataSet;
 
 import com.soufiane.open_data.dtos.dataSet.DataSetResponse;
 import com.soufiane.open_data.entities.*;
+import com.soufiane.open_data.exceptions.ResourceNotFoundException;
 import com.soufiane.open_data.mappers.DataSetMapper;
 import com.soufiane.open_data.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +27,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+
 
 @Service @RequiredArgsConstructor
 public class DataSetServiceImplementation implements DataSetService {
@@ -428,6 +438,41 @@ public class DataSetServiceImplementation implements DataSetService {
         }
         return Files.readAllBytes(filePath);
     }
+
+
+
+    @Override
+    public ByteArrayInputStream generateTemplateWithData(Long datasetId) throws IOException {
+        DataSet dataSet = dataSetRepository.findById(datasetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dataset not found"));
+
+        List<DataSetSport> sportData = dataSet.getDataSetSports(); // Si c'est un dataset de type sport
+
+        // Charger le fichier template (Apache POI)
+        InputStream templateStream = new FileInputStream(dataSet.getFilePath());
+        XSSFWorkbook workbook = new XSSFWorkbook(templateStream);
+        XSSFSheet sheet = workbook.getSheetAt(0);
+
+        int rowIndex = 1; // Commence à remplir à partir de la 2e ligne
+        for (DataSetSport item : sportData) {
+            XSSFRow row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(item.getNomEvenement());
+            row.createCell(1).setCellValue(item.getDescription());
+            row.createCell(2).setCellValue(item.getTheme());
+            row.createCell(3).setCellValue(item.getDatePublication().toString());
+            row.createCell(4).setCellValue(item.getTypeSport());
+            row.createCell(5).setCellValue(item.getLocalisation());
+            row.createCell(6).setCellValue(item.getParticipants());
+            row.createCell(7).setCellValue(item.getResultat());
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+
 
     private void validateDataSetInput(String name, String description, UUID themeUuid, UUID dataProviderOrganisationMemberUuid, MultipartFile file) {
         List<String> errors = new ArrayList<>();
