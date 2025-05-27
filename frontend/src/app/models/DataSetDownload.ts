@@ -16,7 +16,8 @@ export interface DataSetDownload {
   fileSize: number;
   themeId: number;
   themeUuid: string;  
-  theme: SimplifiedDataSetThemeResponse;
+  // theme: SimplifiedDataSetThemeResponse;
+  dataSetTheme: SimplifiedDataSetThemeResponse;  // <-- ici le nom correct
   dataProviderOrganisation: SimplifiedDataProviderOrganisationResponse;
   dataProviderOrganisationMember: SimplifiedDataProviderOrganisationMemberResponse;
 }

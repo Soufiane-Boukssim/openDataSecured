@@ -21,7 +21,7 @@
           {{ dataset.description.length > 100 ? (dataset.description | slice:0:100) + '...' : dataset.description }}
         </p>
         <ul class="list-unstyled">
-          <li><strong>Thème:</strong> {{ dataset.name }}</li>
+          <li><strong>Thème:</strong> {{ dataset.dataSetTheme.name }}</li>
           <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
           <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
           <li><strong>Organisation :</strong> {{ dataset.dataProviderOrganisation.name }}</li>
@@ -83,7 +83,7 @@
             {{ selectedDataset.description }}
           </li>
           <li class="list-group-item">
-            <strong>Thème :</strong> {{ selectedDataset.themeId }}
+            <strong>Thème :</strong> {{ selectedDataset.dataSetTheme.name }}
           </li>
           <li class="list-group-item">
             <strong>Créé par :</strong> {{ selectedDataset.createdBy }}
