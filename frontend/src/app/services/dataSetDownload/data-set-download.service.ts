@@ -27,5 +27,24 @@ export class DataSetDownloadService {
     });
   }
 
+  updateDataset(
+    uuid: string, 
+    name?: string, 
+    description?: string, 
+    themeUuid?: string, 
+    dataProviderOrganisationMemberUuid?: string, 
+    file?: File
+  ): Observable<DataSetDownload> {
+    const formData = new FormData();
+    
+    if (name) formData.append('name', name);
+    if (description) formData.append('description', description);
+    if (themeUuid) formData.append('themeUuid', themeUuid);
+    if (dataProviderOrganisationMemberUuid) formData.append('dataProviderOrganisationMemberUuid', dataProviderOrganisationMemberUuid);
+    if (file) formData.append('file', file);
+
+    return this.http.put<DataSetDownload>(`${this.apiUrl}/update/byId/${uuid}`, formData);
+  }
+
 
 }
