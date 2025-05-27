@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -395,7 +396,10 @@ public class DataSetServiceImplementation implements DataSetService {
             existingDataSet.setFileType(file.getContentType());
             existingDataSet.setFileSize(file.getSize());
         }
-        existingDataSet.setUpdatedBy(member.getEmail());
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        existingDataSet.setUpdatedBy(email);
+
         existingDataSet= dataSetRepository.save(existingDataSet);
         return dataSetMapper.convertToResponse(existingDataSet);
     }
