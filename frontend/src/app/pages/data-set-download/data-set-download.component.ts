@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DataSetDownload } from '../../models/DataSetDownload';
 import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
+import { FileComponent } from '../../components/file/file.component';
 
 
 declare var bootstrap: any; // Important si tu utilises Bootstrap 5 sans TypeScript support
@@ -11,7 +12,7 @@ declare var bootstrap: any; // Important si tu utilises Bootstrap 5 sans TypeScr
 
 @Component({
   selector: 'app-data-set-download',
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule,CommonModule,FileComponent],
   templateUrl: './data-set-download.component.html',
   styleUrl: './data-set-download.component.css'
 })
@@ -40,28 +41,14 @@ export class DataSetDownloadComponent {
 
   loadThemesAndDatasets(): void {
     this.themeService.getThemes().subscribe(themes => {
-      console.log('Thèmes récupérés du backend :', themes); // 👈 Affiche tous les thèmes
+      console.log('Thèmes récupérés du backend :', themes); 
 
       this.themes = themes;
 
       this.dataSetService.getAllDatasets().subscribe(datasets => {
-        console.log('Datasets récupérés du backend :', datasets); // 👈 Facultatif
-
-        // this.datasets = datasets.map(dataset => {
-        //   // Affiche chaque correspondance tentative
-        //   const matchedTheme = this.themes.find(t => t.uuid === dataset.themeUuid);
-        //   console.log(`Dataset [${dataset.name}] - themeId: ${dataset.themeId} - theme trouvé:`, matchedTheme);
-
-        //   return {
-        //     ...dataset,
-        //     themeName: matchedTheme ? matchedTheme.name : 'Inconnu'
-        //   };
-        // });
+        console.log('Datasets récupérés du backend :', datasets); 
         this.datasets = datasets;
         this.filteredDatasets = [...this.datasets];
-
-
-        // this.filteredDatasets = [...this.datasets];
       });
     });
   }
@@ -95,12 +82,6 @@ export class DataSetDownloadComponent {
   }
 
 
-
-
-
-//   selectedDataset: DataSetDownload | null = null;
-
-
   openDeletePopup(dataset: DataSetDownload): void {
     this.selectedDataset = dataset;
 
@@ -108,35 +89,33 @@ export class DataSetDownloadComponent {
     modal.show();
   }
 
-confirmDelete(): void {
-  if (!this.selectedDataset) return;
+  confirmDelete(): void {
+    if (!this.selectedDataset) return;
 
-  const datasetToDelete = this.selectedDataset;
+    const datasetToDelete = this.selectedDataset;
 
-  this.dataSetService.deleteDataset(datasetToDelete.uuid).subscribe({
-    next: (success) => {
-      if (success) {
-        this.filteredDatasets = this.filteredDatasets.filter(
-          d => d.uuid !== datasetToDelete.uuid
-        );
-        alert(`Le dataset "${datasetToDelete.uuid}" a été supprimé.`);
-      } else {
-        alert('Échec de la suppression.');
+    this.dataSetService.deleteDataset(datasetToDelete.uuid).subscribe({
+      next: (success) => {
+        if (success) {
+          this.filteredDatasets = this.filteredDatasets.filter(
+            d => d.uuid !== datasetToDelete.uuid
+          );
+          alert(`Le dataset "${datasetToDelete.uuid}" a été supprimé.`);
+        } else {
+          alert('Échec de la suppression.');
+        }
+        this.selectedDataset = null;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression', err);
+        alert('Erreur lors de la suppression du dataset.');
+        this.selectedDataset = null;
       }
-      this.selectedDataset = null;
-    },
-    error: (err) => {
-      console.error('Erreur lors de la suppression', err);
-      alert('Erreur lors de la suppression du dataset.');
-      this.selectedDataset = null;
-    }
-  });
-
-  // Fermer le modal
-  const modalElement = document.getElementById('confirmDeleteModal');
-  const modalInstance = bootstrap.Modal.getInstance(modalElement);
-  modalInstance?.hide(); // Ajoute aussi ?. ici pour éviter une erreur si le modal est null
-}
+    });
+    const modalElement = document.getElementById('confirmDeleteModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance?.hide(); 
+  }
 
 
 downloadFile(dataset: DataSetDownload): void {

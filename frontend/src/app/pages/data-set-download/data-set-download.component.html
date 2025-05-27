@@ -110,6 +110,12 @@
             <strong>UUID :</strong><br />
             <code>{{ selectedDataset.uuid }}</code>
           </li>
+          <!-- Ajoute cette section en bas du modal-body, après les détails -->
+        <div class="mt-3" *ngIf="selectedDataset?.dataSetTheme?.uuid">
+          <h5>Modèle Excel pour ce thème</h5>
+          <app-file [selectedThemeUuid]="selectedDataset.dataSetTheme.uuid"></app-file>
+        </div>
+
         </ul>
       </div>
 
