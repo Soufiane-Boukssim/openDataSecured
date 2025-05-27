@@ -43,9 +43,7 @@ public class DataSetServiceImplementation implements DataSetService {
     private final DataProviderOrganisationRepository dataProviderOrganisationRepository;
     private final DataProviderOrganisationMemberRepository dataProviderOrganisationMemberRepository;
     private final DataSetThemeRepository dataSetThemeRepository;
-
     private final DataSetMapper dataSetMapper;
-
     private static final String UPLOAD_DIR = System.getProperty("user.dir").replace("\\", "/") + "/uploads/documents/datasets/";
     private static final String fileUrl = "http://localhost:8080/api/datasets/upload/file/";
     private final DataSetSportRepository dataSetSportRepository;
@@ -369,50 +367,50 @@ public class DataSetServiceImplementation implements DataSetService {
 
 
 
-    @Override
-    public DataSetResponse updateDataSetById(UUID uuid, String name, String description, UUID themeUuid, UUID dataProviderOrganisationMemberUuid, MultipartFile file) throws IOException {
-
-        if (dataProviderOrganisationMemberUuid == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le champ 'dataProviderOrganisationMemberUuid' est vide.");
-        }
-
-        DataSet existingDataSet= dataSetRepository.findByUuidAndDeletedFalse(uuid);
-        if (existingDataSet == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataSet Not Found with uuid " + uuid);
-        }
-
-        DataProviderOrganisationMember member = dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid);
-        if (member == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataProviderOrganisationMember Not Found with uuid " + dataProviderOrganisationMemberUuid);
-        }
-
-        if (name != null) {
-            existingDataSet.setName(name);
-        }
-        if (description != null) {
-            existingDataSet.setDescription(description);
-        }
-        if (themeUuid != null) {
-            existingDataSet.setTheme(dataSetThemeRepository.findByUuidAndDeletedFalse(themeUuid));
-        }
-        existingDataSet.setDataProviderOrganisationMember(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid));
-        existingDataSet.setDataProviderOrganisation(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid).getDataProviderOrganisation());
-
-        if (file != null && !file.isEmpty()) {
-            String uniqueFileName = saveFileToDisk(file);
-            existingDataSet.setFileData(file.getBytes());
-            existingDataSet.setFilePath(UPLOAD_DIR + uniqueFileName);
-            existingDataSet.setFile(fileUrl + uniqueFileName);
-            existingDataSet.setFileType(file.getContentType());
-            existingDataSet.setFileSize(file.getSize());
-        }
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        existingDataSet.setUpdatedBy(email);
-
-        existingDataSet= dataSetRepository.save(existingDataSet);
-        return dataSetMapper.convertToResponse(existingDataSet);
-    }
+//    @Override
+//    public DataSetResponse updateDataSetById(UUID uuid, String name, String description, UUID themeUuid, UUID dataProviderOrganisationMemberUuid, MultipartFile file) throws IOException {
+//
+//        if (dataProviderOrganisationMemberUuid == null) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le champ 'dataProviderOrganisationMemberUuid' est vide.");
+//        }
+//
+//        DataSet existingDataSet= dataSetRepository.findByUuidAndDeletedFalse(uuid);
+//        if (existingDataSet == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataSet Not Found with uuid " + uuid);
+//        }
+//
+//        DataProviderOrganisationMember member = dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid);
+//        if (member == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataProviderOrganisationMember Not Found with uuid " + dataProviderOrganisationMemberUuid);
+//        }
+//
+//        if (name != null) {
+//            existingDataSet.setName(name);
+//        }
+//        if (description != null) {
+//            existingDataSet.setDescription(description);
+//        }
+//        if (themeUuid != null) {
+//            existingDataSet.setTheme(dataSetThemeRepository.findByUuidAndDeletedFalse(themeUuid));
+//        }
+//        existingDataSet.setDataProviderOrganisationMember(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid));
+//        existingDataSet.setDataProviderOrganisation(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid).getDataProviderOrganisation());
+//
+//        if (file != null && !file.isEmpty()) {
+//            String uniqueFileName = saveFileToDisk(file);
+//            existingDataSet.setFileData(file.getBytes());
+//            existingDataSet.setFilePath(UPLOAD_DIR + uniqueFileName);
+//            existingDataSet.setFile(fileUrl + uniqueFileName);
+//            existingDataSet.setFileType(file.getContentType());
+//            existingDataSet.setFileSize(file.getSize());
+//        }
+//
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        existingDataSet.setUpdatedBy(email);
+//
+//        existingDataSet= dataSetRepository.save(existingDataSet);
+//        return dataSetMapper.convertToResponse(existingDataSet);
+//    }
 
     @Override
     public Boolean deleteDataSetById(UUID uuid) {
@@ -563,5 +561,130 @@ public class DataSetServiceImplementation implements DataSetService {
 
         return filePath.getFileName().toString();
     }
+
+
+
+
+
+
+    @Override
+    public DataSetResponse updateDataSetById(UUID uuid, String name, String description, UUID themeUuid, UUID dataProviderOrganisationMemberUuid, MultipartFile file) throws IOException {
+
+        if (dataProviderOrganisationMemberUuid == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le champ 'dataProviderOrganisationMemberUuid' est vide.");
+        }
+
+        DataSet existingDataSet = dataSetRepository.findByUuidAndDeletedFalse(uuid);
+        if (existingDataSet == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataSet Not Found with uuid " + uuid);
+        }
+
+        DataProviderOrganisationMember member = dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid);
+        if (member == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "DataProviderOrganisationMember Not Found with uuid " + dataProviderOrganisationMemberUuid);
+        }
+
+        // Mise à jour des champs de base
+        if (name != null) {
+            existingDataSet.setName(name);
+        }
+        if (description != null) {
+            existingDataSet.setDescription(description);
+        }
+        if (themeUuid != null) {
+            existingDataSet.setTheme(dataSetThemeRepository.findByUuidAndDeletedFalse(themeUuid));
+        }
+        existingDataSet.setDataProviderOrganisationMember(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid));
+        existingDataSet.setDataProviderOrganisation(dataProviderOrganisationMemberRepository.findByUuidAndDeletedFalse(dataProviderOrganisationMemberUuid).getDataProviderOrganisation());
+
+        // Si un nouveau fichier est fourni
+        if (file != null && !file.isEmpty()) {
+            // 1. Marquer les anciennes données comme supprimées
+            markOldDataAsDeleted(existingDataSet.getId(), existingDataSet.getTheme().getName());
+
+            // 2. Mettre à jour les informations du fichier
+            String uniqueFileName = saveFileToDisk(file);
+            existingDataSet.setFileData(file.getBytes());
+            existingDataSet.setFilePath(UPLOAD_DIR + uniqueFileName);
+            existingDataSet.setFile(fileUrl + uniqueFileName);
+            existingDataSet.setFileType(file.getContentType());
+            existingDataSet.setFileSize(file.getSize());
+
+            // 3. Traiter le nouveau fichier Excel et insérer les nouvelles données
+            ensureUploadDirectoryExists();
+            Workbook workbook = new XSSFWorkbook(file.getInputStream());
+            Sheet sheet = workbook.getSheetAt(0);
+
+            switch (existingDataSet.getTheme().getName().toLowerCase()) {
+                case "sport":
+                    enregistrerDataSetSport(sheet, existingDataSet.getId());
+                    break;
+                case "finance":
+                    enregistrerDataSetFinance(sheet, existingDataSet.getId());
+                    break;
+                case "environnement":
+                    enregistrerDataSetEnvironnement(sheet, existingDataSet.getId());
+                    break;
+                default:
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thème non reconnu pour insertion des données.");
+            }
+
+            workbook.close();
+        }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        existingDataSet.setUpdatedBy(email);
+
+        existingDataSet = dataSetRepository.save(existingDataSet);
+        return dataSetMapper.convertToResponse(existingDataSet);
+    }
+
+    /**
+     * Marque les anciennes données comme supprimées selon le thème
+     */
+    private void markOldDataAsDeleted(Long dataSetId, String themeName) {
+        switch (themeName.toLowerCase()) {
+            case "sport":
+                // Marquer toutes les données sport liées à ce dataset comme supprimées
+                List<DataSetSport> sportData = dataSetSportRepository.findByGidAndDeletedFalse(dataSetId);
+                for (DataSetSport sport : sportData) {
+                    sport.setDeleted(true);
+                }
+                dataSetSportRepository.saveAll(sportData);
+                break;
+
+            case "finance":
+                // Marquer toutes les données finance liées à ce dataset comme supprimées
+                List<DataSetFinance> financeData = dataSetFinanceRepository.findByGidAndDeletedFalse(dataSetId);
+                for (DataSetFinance finance : financeData) {
+                    finance.setDeleted(true);
+                }
+                dataSetFinanceRepository.saveAll(financeData);
+                break;
+
+            case "environnement":
+                // Marquer toutes les données environnement liées à ce dataset comme supprimées
+                List<DataSetEnvironment> environmentData = dataSetEnvironmentRepository.findByGidAndDeletedFalse(dataSetId);
+                for (DataSetEnvironment environment : environmentData) {
+                    environment.setDeleted(true);
+                }
+                dataSetEnvironmentRepository.saveAll(environmentData);
+                break;
+
+            default:
+                System.err.println("⚠️ Thème non reconnu pour la suppression des anciennes données: " + themeName);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }
