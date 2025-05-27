@@ -54,3 +54,45 @@ input[type="search"]:focus {
     max-width: 33.3333%;
   }
 }
+
+/*  */
+
+.drive-style-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 30px; 
+}
+
+.file-card {
+  width: 150px;
+  height: 150px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.file-card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+}
+
+.file-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.file-name {
+  font-size: 14px;
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+}
