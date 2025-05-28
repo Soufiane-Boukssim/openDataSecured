@@ -1,1 +1,40 @@
-<p>chat-bot works!</p>
+<div class="container">
+  <h2>Free ChatBot with History</h2>
+  
+  <div class="form-group">
+    <input 
+      type="text" 
+      class="form-control" 
+      [(ngModel)]="userInput"
+      (keypress)="onKeyPress($event)"
+      placeholder="Enter your question" 
+    />
+  </div>
+  
+  <button 
+    class="btn btn-success" 
+    (click)="sendMessage()"
+    [disabled]="isStreaming"
+  >
+    {{ isStreaming ? 'Thinking...' : 'Ask!' }}
+  </button>
+
+  <div id="chatContainer" class="chat-container">
+    <!-- Messages de l'historique -->
+    <div 
+      *ngFor="let message of chatHistory" 
+      class="message"
+      [ngClass]="message.role === 'user' ? 'userMessage' : 'botMessage'"
+      [innerHTML]="parseMarkdown(message.content)"
+    ></div>
+    
+    <!-- Message en streaming -->
+    <div 
+      *ngIf="isStreaming" 
+      class="message botMessage"
+    >
+      <span [innerHTML]="parseMarkdown(streamingMessage)"></span>
+      <span class="blink-cursor"></span>
+    </div>
+  </div>
+</div>
