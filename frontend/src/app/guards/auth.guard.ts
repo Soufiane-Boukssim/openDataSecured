@@ -9,10 +9,12 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean | UrlTree {
-    const token = this.authService.getToken();
-    if (token) {
+    // Utiliser la méthode isAuthenticated qui vérifie à la fois l'existence et la validité du token
+    if (this.authService.isAuthenticated()) {
       return true;
     }
+    
+    // Si pas authentifié ou token expiré, rediriger vers login
     return this.router.parseUrl('/admin/login');
   }
 }
