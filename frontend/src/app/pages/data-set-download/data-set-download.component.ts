@@ -5,6 +5,9 @@ import { DataSetDownload } from '../../models/DataSetDownload';
 import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 import { FileComponent } from '../../components/file/file.component';
+import { HttpClient } from '@angular/common/http';
+import * as XLSX from 'xlsx';
+
 
 declare var bootstrap: any; 
 
@@ -31,9 +34,12 @@ export class DataSetDownloadComponent {
   };
   isUpdating = false;
 
+  tableData: any[][] = [];
+
   constructor(
     private dataSetService: DataSetDownloadService,
-    private themeService: DataSetThemeService
+    private themeService: DataSetThemeService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -239,4 +245,24 @@ export class DataSetDownloadComponent {
       window.URL.revokeObjectURL(url);
     });
   }
+
+viewAsTable(datasetId: number): void {
+  this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+    const blob = response.body as Blob;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      this.tableData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // Affiche la modal avec bootstrap
+      const tableModal = new bootstrap.Modal(document.getElementById('tableModal')!);
+      tableModal.show();
+    };
+    reader.readAsArrayBuffer(blob);
+  });
+}
+
 }

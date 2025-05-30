@@ -42,7 +42,7 @@
         <button class="btn btn-success btn-sm" (click)="downloadTemplate(dataset.id)">
           <i class="bi bi-download"></i> Download
         </button>
-        <button class="btn btn-success btn-sm" (click)="downloadTemplate(dataset.id)">
+        <button class="btn btn-success btn-sm" (click)="viewAsTable(dataset.id)">
           <i class="bi bi-table"></i>  Tableau
         </button>
         
@@ -229,6 +229,39 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="tableModalLabel">Aperçu du fichier Excel</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr *ngIf="tableData.length > 0">
+                <th *ngFor="let header of tableData[0]">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of tableData.slice(1)">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
