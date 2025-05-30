@@ -6,11 +6,11 @@
       [ngClass]="{ 'active': last }" 
       [attr.aria-current]="last ? 'page' : null">
       
-      <ng-container *ngIf="!last; else lastBreadcrumb">
+      <ng-container *ngIf="!last && crumb.label !== 'Admin' && crumb.label !== 'Producteurs'; else lastOrNoLink">
         <a [routerLink]="crumb.url">{{ crumb.label }}</a>
       </ng-container>
       
-      <ng-template #lastBreadcrumb>
+      <ng-template #lastOrNoLink>
         <span>{{ crumb.label }}</span>
       </ng-template>
     </li>

@@ -41,14 +41,14 @@ export const routes: Routes = [
                   { path: 'download', component: DataSetDownloadComponent, data: { breadcrumb: 'Download' } },
                 ]  
               },
-              { path: 'chatBot', component: ChatBotComponent, data: { breadcrumb: 'chatBot' }  },
+              { path: 'chatBot', component: ChatBotComponent, data: { breadcrumb: 'ChatBot' }  },
               
               {
                 path: 'producteurs',
-                data: { breadcrumb: 'producteurs' },
+                data: { breadcrumb: 'Producteurs' },
                 children: [
-                  { path: 'organisations', component: DataProviderOrganisationComponent, data: { breadcrumb: 'organisations' } },
-                  { path: 'members', component: DataProviderMemberComponent, data: { breadcrumb: 'members' } },
+                  { path: 'organisations', component: DataProviderOrganisationComponent, data: { breadcrumb: 'Organisations' } },
+                  { path: 'members', component: DataProviderMemberComponent, data: { breadcrumb: 'Members' } },
                   { path: '', redirectTo: 'organisations', pathMatch: 'full' }
                 ]
               },
