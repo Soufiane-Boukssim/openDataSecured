@@ -23,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -298,9 +300,27 @@ public class DataSetServiceImplementation implements DataSetService {
                 environment.setDescription(getStringValue(row.getCell(1)));
                 environment.setTheme(getStringValue(row.getCell(2)));
 
-                Date date = row.getCell(3).getDateCellValue();
-                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                environment.setDateDePublication(localDate);
+                // Gestion de la date (colonne 3)
+                Cell dateCell = row.getCell(3);
+                if (dateCell != null) {
+                    if (dateCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dateCell)) {
+                        Date date = dateCell.getDateCellValue();
+                        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        environment.setDateDePublication(localDate);
+                    } else if (dateCell.getCellType() == CellType.STRING) {
+                        String dateStr = dateCell.getStringCellValue().trim();
+                        if (!dateStr.isEmpty()) {
+                            try {
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                LocalDate localDate = LocalDate.parse(dateStr, formatter);
+                                environment.setDateDePublication(localDate);
+                            } catch (DateTimeParseException e) {
+                                System.err.println("⚠️ Date invalide à la ligne " + i + ": " + dateStr);
+                                environment.setDateDePublication(null);
+                            }
+                        }
+                    }
+                }
 
                 environment.setUniteDeMesure(getStringValue(row.getCell(4)));
 
