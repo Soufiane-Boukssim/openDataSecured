@@ -7,13 +7,15 @@ import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.
 import { FileComponent } from '../../components/file/file.component';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
 
 
 declare var bootstrap: any; 
 
 @Component({
   selector: 'app-data-set-download',
-  imports: [FormsModule, CommonModule, FileComponent],
+  imports: [FormsModule, CommonModule, FileComponent,NgChartsModule],
   templateUrl: './data-set-download.component.html',
   styleUrl: './data-set-download.component.css'
 })
@@ -246,23 +248,79 @@ export class DataSetDownloadComponent {
     });
   }
 
-viewAsTable(datasetId: number): void {
-  this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
-    const blob = response.body as Blob;
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      this.tableData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  viewAsTable(datasetId: number): void {
+    this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+      const blob = response.body as Blob;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        this.tableData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      // Affiche la modal avec bootstrap
-      const tableModal = new bootstrap.Modal(document.getElementById('tableModal')!);
-      tableModal.show();
-    };
-    reader.readAsArrayBuffer(blob);
-  });
-}
+        // Affiche la modal avec bootstrap
+        const tableModal = new bootstrap.Modal(document.getElementById('tableModal')!);
+        tableModal.show();
+      };
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+
+
+
+
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+  };
+  public barChartLabels: string[] = [];
+  public barChartType: ChartType = 'bar';
+  public barChartLegend = true;
+  public barChartPlugins = [];
+  public barChartData: ChartConfiguration<'bar'>['data']['datasets'] = [];
+
+
+
+  viewAsChart(datasetId: number): void {
+    this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+      const blob = response.body as Blob;
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        const headers = rows[0] as string[];
+        const anneeIndex = headers.indexOf('Année budgétaire');
+        const montantIndex = headers.indexOf('Montant voté');
+
+        const chartLabels: string[] = [];
+        const chartData: number[] = [];
+
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i] as any[];
+          const annee = row[anneeIndex];
+          const montant = row[montantIndex];
+
+          if (annee && montant) {
+            chartLabels.push(String(annee));
+            chartData.push(Number(montant));
+          }
+        }
+
+        this.barChartLabels = chartLabels;
+        this.barChartData = [{ data: chartData, label: 'Montant voté par année budgétaire' }];
+
+        const modal = new bootstrap.Modal(document.getElementById('chartModal')!);
+        modal.show();
+      };
+
+      reader.readAsArrayBuffer(blob);
+    });
+  }
 
 }

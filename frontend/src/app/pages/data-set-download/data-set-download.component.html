@@ -45,14 +45,10 @@
         <button class="btn btn-success btn-sm" (click)="viewAsTable(dataset.id)">
           <i class="bi bi-table"></i>  Tableau
         </button>
-        <button class="btn btn-success btn-sm" >
+        <button class="btn btn-success btn-sm" (click)="viewAsChart(dataset.id)">
           <img src="assets/images/DataVisualisations.png" alt="Visualisation icon" width="20" height="20" class="me-1 white-icon">
-          Data Visualisations
+          Visualisation
         </button>
-        
-
-
-
       </div>
     </div>
   </div>
@@ -266,6 +262,27 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chartModalLabel">Visualisation du montant par année</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <canvas baseChart
+          [data]="{ labels: barChartLabels, datasets: barChartData }"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          [legend]="barChartLegend"
+          [plugins]="barChartPlugins">
+        </canvas>
       </div>
     </div>
   </div>
