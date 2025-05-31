@@ -281,3 +281,19 @@
   </div>
 </div>
 
+
+
+<!-- Visualisation graphique des donnees environnement sous forme carte dans web -->
+<div class="modal fade" id="leafletMapModal" tabindex="-1" aria-labelledby="leafletMapModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="leafletMapModalLabel">Carte environnement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <app-leaflet-map [datasetId]="currentDatasetId"></app-leaflet-map>
+      </div>
+    </div>
+  </div>
+</div>

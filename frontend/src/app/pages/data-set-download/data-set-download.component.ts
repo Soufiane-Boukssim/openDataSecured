@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DataSetDownload } from '../../models/DataSetDownload';
 import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
@@ -9,13 +9,14 @@ import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
+import { LeafletMapComponent } from "../../components/leaflet-map/leaflet-map.component";
 
 
 declare var bootstrap: any; 
 
 @Component({
   selector: 'app-data-set-download',
-  imports: [FormsModule, CommonModule, FileComponent,NgChartsModule],
+  imports: [FormsModule, CommonModule, FileComponent, NgChartsModule, LeafletMapComponent],
   templateUrl: './data-set-download.component.html',
   styleUrl: './data-set-download.component.css'
 })
@@ -278,13 +279,18 @@ export class DataSetDownloadComponent {
   public barChartPlugins = [];
   public barChartData: ChartConfiguration<'bar'>['data']['datasets'] = [];
 
+  currentDatasetId?: number;
+  showLeafletMap: boolean = false;  // Ajoute cette propriété
+
+
   viewAsChart(datasetId: number, theme: string): void {
     const lowerTheme = theme.toLowerCase();
     if (lowerTheme === 'finance') {
       this.visualizeFinanceDataset(datasetId);
     } 
     else if (lowerTheme === 'environnement') {
-      this.visualizeEnvironmentDataset(datasetId);
+      this.currentDatasetId = datasetId;
+      this.visualizeEnvironmentDataset();
     }
     else if (lowerTheme === 'sport') {
       this.visualizeSportDataset(datasetId);
@@ -324,12 +330,27 @@ export class DataSetDownloadComponent {
     });
   }
 
-  visualizeEnvironmentDataset(datasetId: number):void{
-    console.log("environnement graph")
-  }
-
   visualizeSportDataset(datasetId: number):void{
     console.log("sport graph")
   }
+
+  @ViewChild(LeafletMapComponent) leafletMapComponent!: LeafletMapComponent; // Reference to the child map component
+
+  visualizeEnvironmentDataset() {
+    const modalElement = document.getElementById('leafletMapModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+
+      // Add a listener for the shown.bs.modal event
+      modalElement.addEventListener('shown.bs.modal', () => {
+        // Check if the LeafletMapComponent is available and its map instance
+        if (this.leafletMapComponent && this.leafletMapComponent.getMapInstance()) {
+          this.leafletMapComponent.getMapInstance()!.invalidateSize();
+        }
+      }, { once: true }); // Use { once: true } to remove the listener after it fires once
+    }
+  }
+
 
 }
