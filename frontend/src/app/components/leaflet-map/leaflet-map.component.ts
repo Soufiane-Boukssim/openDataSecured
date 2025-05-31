@@ -1,23 +1,30 @@
-// LeafletMapComponent.ts
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+// D:\bureau2025\openDataSecured\frontend\src\app\components\leaflet-map\leaflet-map.component.ts
+
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-leaflet-map',
-  imports: [],
+  // Assurez-vous d'avoir CommonModule si vous utilisez *ngIf ou *ngFor dans le template de ce composant
+  // imports: [CommonModule], // Décommentez si nécessaire
   templateUrl: './leaflet-map.component.html',
   styleUrls: ['./leaflet-map.component.css']
 })
-export class LeafletMapComponent implements OnInit, AfterViewInit, OnDestroy { // Add AfterViewInit and OnDestroy
+export class LeafletMapComponent implements OnInit, OnDestroy {
 
-  @Input() datasetId?: number;
-  @ViewChild('mapElement') mapElement!: ElementRef; // Add this to get a reference to the map div
+  @Input() datasetId?: number; // Maintenez cette input si vous en avez besoin pour d'autres logiques
+  @Input() citiesToShow: { name: string; coords: L.LatLngTuple }[] = []; // NOUVEAU: Input pour les villes à afficher
+
+  @ViewChild('mapElement') mapElement!: ElementRef;
 
   private map: L.Map | undefined;
 
-// LeafletMapComponent.ts
+  // --- CORRECTION CLÉ ICI : DÉCLARATION DE markerLayerGroup ---
+  private markerLayerGroup: L.LayerGroup = L.layerGroup(); // Déclarez et initialisez ici
+  // -----------------------------------------------------------
 
-  private cities: { name: string; coords: L.LatLngTuple }[] = [
+
+  private allMoroccanCities: { name: string; coords: L.LatLngTuple }[] = [
     { name: 'Casablanca', coords: [33.5731, -7.5898] },
     { name: 'Rabat', coords: [34.0209, -6.8417] },
     { name: 'Marrakech', coords: [31.6295, -7.9811] },
@@ -62,20 +69,18 @@ export class LeafletMapComponent implements OnInit, AfterViewInit, OnDestroy { /
 
   ngOnInit(): void {
     this.setLeafletIconPaths();
-  }
-
-  ngAfterViewInit(): void {
-    // Initialize map here to ensure the div is in the DOM and rendered
-    this.initMap();
+    // L'initialisation de la carte (initializeMap()) est maintenant déclenchée par le composant parent
   }
 
   ngOnDestroy(): void {
     if (this.map) {
-      this.map.remove(); // Clean up map instance when component is destroyed
+      this.map.remove(); // Nettoie l'instance de la carte lorsque le composant est détruit
+      this.map = undefined; // Assurez-vous que la carte est nullifiée pour une prochaine initialisation
     }
   }
 
   private setLeafletIconPaths(): void {
+    // Permet à Leaflet de trouver les icônes de marqueurs par défaut d'Angular
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'assets/images/leaflet/marker-icon-2x.png',
@@ -84,25 +89,56 @@ export class LeafletMapComponent implements OnInit, AfterViewInit, OnDestroy { /
     });
   }
 
-  private initMap(): void {
-    // Only initialize if map hasn't been initialized
-    if (!this.map) {
-        this.map = L.map(this.mapElement.nativeElement).setView([33.5731, -7.5898], 6);
+  public initializeMap(): void {
+    console.log('Données reçues par la carte :', this.citiesToShow);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(this.map);
-
-        this.cities.forEach(city => {
-          L.marker(city.coords)
-            .addTo(this.map!)
-            .bindPopup(city.name);
-        });
+    if (!this.mapElement || !this.mapElement.nativeElement) {
+      console.warn("L'élément de carte n'est pas disponible. Impossible d'initialiser la carte.");
+      return;
     }
+
+    if (!this.map) {
+      this.map = L.map(this.mapElement.nativeElement).setView([31.7917, -7.0926], 6);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(this.map);
+
+      // Le LayerGroup est ajouté à la carte une seule fois lors de la première initialisation
+      this.markerLayerGroup.addTo(this.map);
+    }
+
+    // Efface tous les marqueurs du LayerGroup existants avant d'en ajouter de nouveaux
+    this.markerLayerGroup.clearLayers();
+
+    // Ajoute les nouveaux marqueurs au LayerGroup
+    this.citiesToShow.forEach(city => {
+      L.marker(city.coords)
+        .bindPopup(city.name)
+        .addTo(this.markerLayerGroup) // Ajout au LayerGroup, pas directement à la carte
+        .on('error', (err) => {
+          console.error('Erreur lors de l’ajout du marqueur pour', city.name, err);
+        });
+    });
+
+    // Ajuster la vue de la carte pour englober toutes les villes affichées
+    if (this.citiesToShow.length > 0) {
+      const bounds = L.latLngBounds(this.citiesToShow.map(city => city.coords));
+      this.map.fitBounds(bounds.pad(0.1));
+    } else {
+      // Si aucune ville à afficher, revenir à une vue par défaut du Maroc
+      this.map.setView([31.7917, -7.0926], 6);
+    }
+
+    // Invalider la taille après avoir ouvert le modal
+    this.map.invalidateSize();
   }
 
-  // Public method to get the map instance
   public getMapInstance(): L.Map | undefined {
     return this.map;
+  }
+
+  public getAllMoroccanCities(): { name: string; coords: L.LatLngTuple }[] {
+    return this.allMoroccanCities;
   }
 }

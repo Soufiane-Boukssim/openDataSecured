@@ -1,3 +1,5 @@
+// D:\bureau2025\openDataSecured\frontend\src\app\data-set-download\data-set-download.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +14,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { LeafletMapComponent } from "../../components/leaflet-map/leaflet-map.component";
 
 
-declare var bootstrap: any; 
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-data-set-download',
@@ -21,23 +23,29 @@ declare var bootstrap: any;
   styleUrl: './data-set-download.component.css'
 })
 export class DataSetDownloadComponent {
+  @ViewChild(LeafletMapComponent) leafletMapComponent!: LeafletMapComponent; // Reference to the child map component
+
   searchTerm: string = '';
   datasets: DataSetDownload[] = [];
   selectedDataset: DataSetDownload | null = null;
   filteredDatasets: DataSetDownload[] = [];
   themes: any[] = [];
-  
+
   // Variables pour la mise à jour
   updateData = {
     name: '',
     description: '',
     themeUuid: '',
-    dataProviderOrganisationMemberUuid: '', // nouveau champ ajouté
+    dataProviderOrganisationMemberUuid: '',
     file: null as File | null
   };
   isUpdating = false;
 
   tableData: any[][] = [];
+
+  // NOUVEAU: Propriété pour stocker les villes filtrées à passer au composant carte
+  citiesForMap: { name: string; coords: L.LatLngTuple }[] = [];
+  currentDatasetId?: number; // Déplacé ici pour être accessible globalement dans la classe
 
   constructor(
     private dataSetService: DataSetDownloadService,
@@ -85,11 +93,9 @@ export class DataSetDownloadComponent {
     }
   }
 
-  // Nouvelle méthode pour ouvrir le modal de mise à jour
   openUpdateModal(dataset: DataSetDownload): void {
     this.selectedDataset = dataset;
-    
-    // Pré-remplir le formulaire avec les données actuelles
+
     this.updateData = {
       name: dataset.name,
       description: dataset.description,
@@ -102,12 +108,10 @@ export class DataSetDownloadComponent {
     modal.show();
   }
 
-  // Méthode appelée quand un fichier est sélectionné
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Vérifier le type de fichier
-      if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+      if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
           file.type === 'application/vnd.ms-excel') {
         this.updateData.file = file;
       } else {
@@ -117,13 +121,11 @@ export class DataSetDownloadComponent {
     }
   }
 
-  // Méthode pour confirmer la mise à jour
   confirmUpdate(): void {
     if (!this.selectedDataset) return;
 
     this.isUpdating = true;
 
-    // Préparer les données à envoyer
     const name = this.updateData.name !== this.selectedDataset.name ? this.updateData.name : undefined;
     const description = this.updateData.description !== this.selectedDataset.description ? this.updateData.description : undefined;
     const themeUuid = this.updateData.themeUuid !== this.selectedDataset.dataSetTheme.uuid ? this.updateData.themeUuid : undefined;
@@ -133,54 +135,50 @@ export class DataSetDownloadComponent {
       name,
       description,
       themeUuid,
-      this.selectedDataset.dataProviderOrganisationMember.uuid, // UUID du membre requis
+      this.selectedDataset.dataProviderOrganisationMember.uuid,
       this.updateData.file || undefined
     ).subscribe({
       next: (updatedDataset) => {
         console.log('Dataset mis à jour avec succès:', updatedDataset);
-        
-        // Mettre à jour la liste locale
+
         const index = this.datasets.findIndex(d => d.uuid === updatedDataset.uuid);
         if (index !== -1) {
           this.datasets[index] = updatedDataset;
-          this.applyFilter(); // Réappliquer le filtre
+          this.applyFilter();
         }
 
         alert(`Le dataset "${updatedDataset.name}" a été mis à jour avec succès.`);
-        
-        // Fermer le modal
+
         const modalElement = document.getElementById('updateModal');
         const modalInstance = bootstrap.Modal.getInstance(modalElement);
         modalInstance?.hide();
-        
-        // Réinitialiser les données
+
         this.resetUpdateForm();
         this.isUpdating = false;
       },
       error: (err) => {
         console.error('Erreur lors de la mise à jour:', err);
         let errorMessage = 'Erreur lors de la mise à jour du dataset.';
-        
+
         if (err.error && err.error.message) {
           errorMessage = err.error.message;
         } else if (err.message) {
           errorMessage = err.message;
         }
-        
+
         alert(errorMessage);
         this.isUpdating = false;
       }
     });
   }
 
-  // Méthode pour réinitialiser le formulaire de mise à jour
   resetUpdateForm(): void {
     this.updateData = {
       name: '',
       description: '',
       themeUuid: '',
       file: null,
-      dataProviderOrganisationMemberUuid: '', // nouveau champ ajouté
+      dataProviderOrganisationMemberUuid: '',
     };
     this.selectedDataset = null;
   }
@@ -217,7 +215,7 @@ export class DataSetDownloadComponent {
         this.selectedDataset = null;
       }
     });
-    
+
     const modalElement = document.getElementById('confirmDeleteModal');
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance?.hide();
@@ -229,7 +227,6 @@ export class DataSetDownloadComponent {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
 
-      // Extraire le nom depuis le header
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'template.xlsx';
       if (contentDisposition) {
@@ -239,7 +236,6 @@ export class DataSetDownloadComponent {
         }
       }
 
-      // Télécharger le fichier
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -267,9 +263,7 @@ export class DataSetDownloadComponent {
   }
 
 
-////////////////////////////////////////////////////////////////////
-
-
+  // Chart.js properties
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
   };
@@ -279,20 +273,19 @@ export class DataSetDownloadComponent {
   public barChartPlugins = [];
   public barChartData: ChartConfiguration<'bar'>['data']['datasets'] = [];
 
-  currentDatasetId?: number;
-  showLeafletMap: boolean = false;  // Ajoute cette propriété
-
+  // showLeafletMap: boolean = false; // Cette propriété n'est plus nécessaire avec la nouvelle approche
 
   viewAsChart(datasetId: number, theme: string): void {
     const lowerTheme = theme.toLowerCase();
     if (lowerTheme === 'finance') {
       this.visualizeFinanceDataset(datasetId);
-    } 
+    }
     else if (lowerTheme === 'environnement') {
-      this.currentDatasetId = datasetId;
-      this.visualizeEnvironmentDataset();
+      this.currentDatasetId = datasetId; // S'assurer que l'ID est bien défini
+      this.visualizeEnvironmentDataset(datasetId); // IMPORTANT: Passez datasetId
     }
     else if (lowerTheme === 'sport') {
+      this.currentDatasetId = datasetId; // S'assurer que l'ID est bien défini
       this.visualizeSportDataset(datasetId);
     }
   }
@@ -330,27 +323,142 @@ export class DataSetDownloadComponent {
     });
   }
 
-  visualizeSportDataset(datasetId: number):void{
-    console.log("sport graph")
-  }
+  visualizeSportDataset(datasetId: number): void {
+    this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+      const blob = response.body as Blob;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-  @ViewChild(LeafletMapComponent) leafletMapComponent!: LeafletMapComponent; // Reference to the child map component
-
-  visualizeEnvironmentDataset() {
-    const modalElement = document.getElementById('leafletMapModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-
-      // Add a listener for the shown.bs.modal event
-      modalElement.addEventListener('shown.bs.modal', () => {
-        // Check if the LeafletMapComponent is available and its map instance
-        if (this.leafletMapComponent && this.leafletMapComponent.getMapInstance()) {
-          this.leafletMapComponent.getMapInstance()!.invalidateSize();
+        if (rows.length === 0) {
+          alert('Le fichier Excel est vide.');
+          return;
         }
-      }, { once: true }); // Use { once: true } to remove the listener after it fires once
-    }
+
+        const headers = rows[0] as string[];
+        const villeIndex = headers.indexOf('Localisation');
+        if (villeIndex === -1) {
+          alert("La colonne 'Localisation' n'a pas été trouvée.");
+          return;
+        }
+
+        const excelCitiesNames: Set<string> = new Set();
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i] as any[];
+          if (row && row.length > villeIndex && row[villeIndex] !== undefined && row[villeIndex] !== null) {
+            const cityName = String(row[villeIndex]).trim();
+            if (cityName) {
+              excelCitiesNames.add(cityName.toLowerCase());
+            }
+          }
+        }
+
+        if (!this.leafletMapComponent) {
+          console.error("LeafletMapComponent n'est pas encore disponible.");
+          alert("Erreur interne: Le composant de carte n'est pas prêt.");
+          return;
+        }
+        const allCities = this.leafletMapComponent.getAllMoroccanCities();
+
+        this.citiesForMap = allCities.filter(city =>
+          excelCitiesNames.has(city.name.toLowerCase())
+        ).map(city => ({
+          name: city.name,
+          coords: [city.coords[0], city.coords[1]] // Crée une nouvelle instance de coordonnées
+        }));
+
+        console.log('Villes filtrées pour la carte :', this.citiesForMap); // AJOUTÉ
+
+        const modalElement = document.getElementById('leafletMapModal');
+        if (modalElement) {
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+
+          modalElement.addEventListener('shown.bs.modal', () => {
+            if (this.leafletMapComponent) {
+              this.leafletMapComponent.initializeMap();
+            }
+          }, { once: true });
+        }
+      };
+      reader.readAsArrayBuffer(blob);
+    }, error => {
+      console.error('Erreur lors du téléchargement du fichier Excel :', error);
+      alert('Impossible de télécharger le fichier Excel pour la visualisation de la carte.');
+    });
   }
 
+  /* visualisation carte pour theme environnement  */
+  visualizeEnvironmentDataset(datasetId: number) {
+    this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+      const blob = response.body as Blob;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
+        if (rows.length === 0) {
+          alert('Le fichier Excel est vide.');
+          return;
+        }
+
+        const headers = rows[0] as string[];
+        const villeIndex = headers.indexOf('Lieu');
+        if (villeIndex === -1) {
+          alert("La colonne 'Lieu' n'a pas été trouvée.");
+          return;
+        }
+
+        const excelCitiesNames: Set<string> = new Set();
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i] as any[];
+          if (row && row.length > villeIndex && row[villeIndex] !== undefined && row[villeIndex] !== null) {
+            const cityName = String(row[villeIndex]).trim();
+            if (cityName) {
+              excelCitiesNames.add(cityName.toLowerCase());
+            }
+          }
+        }
+
+        if (!this.leafletMapComponent) {
+          console.error("LeafletMapComponent n'est pas encore disponible.");
+          alert("Erreur interne: Le composant de carte n'est pas prêt.");
+          return;
+        }
+        const allCities = this.leafletMapComponent.getAllMoroccanCities();
+
+        this.citiesForMap = allCities.filter(city =>
+          excelCitiesNames.has(city.name.toLowerCase())
+        ).map(city => ({
+          name: city.name,
+          coords: [city.coords[0], city.coords[1]] // Crée une nouvelle instance de coordonnées
+        }));
+
+        console.log('Villes filtrées pour la carte :', this.citiesForMap); // AJOUTÉ
+
+        const modalElement = document.getElementById('leafletMapModal');
+        if (modalElement) {
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+
+          modalElement.addEventListener('shown.bs.modal', () => {
+            if (this.leafletMapComponent) {
+              this.leafletMapComponent.initializeMap();
+            }
+          }, { once: true });
+        }
+      };
+      reader.readAsArrayBuffer(blob);
+    }, error => {
+      console.error('Erreur lors du téléchargement du fichier Excel :', error);
+      alert('Impossible de télécharger le fichier Excel pour la visualisation de la carte.');
+    });
+  }
 }
