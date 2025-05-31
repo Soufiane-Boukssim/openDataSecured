@@ -12,6 +12,7 @@ import { DataProviderMemberComponent } from './pages/data-provider-member/data-p
 import { DataSetUploadComponent } from './pages/data-set-upload/data-set-upload.component';
 import { DataSetDownloadComponent } from './pages/data-set-download/data-set-download.component';
 import { FileComponent } from './components/file/file.component';
+import { LeafletMapComponent } from './components/leaflet-map/leaflet-map.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
@@ -30,6 +31,7 @@ export const routes: Routes = [
             component: ContentComponent,
             data: { breadcrumb: 'Admin' },  
             children: [
+              { path: 'LeafletMapComponent', component: LeafletMapComponent, data: { breadcrumb: 'LeafletMapComponent' }  },
               { path: 'home', component: HomeComponent, data: { breadcrumb: 'Home' }  },
               { path: 'dataSetThemes', component: DataSetThemeComponent, data: { breadcrumb: 'Themes' } },
               { 

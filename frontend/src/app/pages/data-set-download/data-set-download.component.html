@@ -1,6 +1,5 @@
 <div class="container mt-4">
   <h2>Liste des Data Sets Téléchargeables</h2>
-
   <div class="d-flex justify-content-end mb-3">
     <input
       type="search"
@@ -11,48 +10,47 @@
       aria-label="Recherche par nom"
     />
   </div>
-
-<div class="row">
-  <div class="col-12 col-custom col-xl-4" *ngFor="let dataset of filteredDatasets">
-    <div class="card h-100 shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title">{{ dataset.name }}</h5>
-        <p class="card-text">
-          {{ dataset.description.length > 100 ? (dataset.description | slice:0:100) + '...' : dataset.description }}
-        </p>
-        <ul class="list-unstyled">
-          <li><strong>Thème:</strong> {{ dataset.dataSetTheme.name }}</li>
-          <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
-          <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
-          <li><strong>Organisation :</strong> {{ dataset.dataProviderOrganisation.name }}</li>
-          <li><strong>Membre Organisation :</strong> {{ dataset.dataProviderOrganisationMember.email }}</li>
-        </ul>
-      </div>
-
-      <div class="card-footer d-flex justify-content-between bg-white border-top-0">
-        <button class="btn btn-info btn-sm" (click)="viewDataset(dataset.uuid)">
-          <i class="bi bi-eye"></i> View
-        </button>
-        <button class="btn btn-warning btn-sm" (click)="openUpdateModal(dataset)">
-          <i class="bi bi-pencil"></i> Update
-        </button>
-        <button type="button" class="btn btn-danger btn-sm" (click)="openDeletePopup(dataset)">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-        <button class="btn btn-success btn-sm" (click)="downloadTemplate(dataset.id)">
-          <i class="bi bi-download"></i> Download
-        </button>
-        <button class="btn btn-success btn-sm" (click)="viewAsTable(dataset.id)">
-          <i class="bi bi-table"></i>  Tableau
-        </button>
-        <button class="btn btn-success btn-sm" (click)="viewAsChart(dataset.id,dataset.dataSetTheme.name)">
-          <img src="assets/images/DataVisualisations.png" alt="Visualisation icon" width="20" height="20" class="me-1 white-icon">
-          Visualisation
-        </button>
+  <div class="row">
+    <div class="col-12 col-custom col-xl-4" *ngFor="let dataset of filteredDatasets">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ dataset.name }}</h5>
+          <p class="card-text">
+            {{ dataset.description.length > 100 ? (dataset.description | slice:0:100) + '...' : dataset.description }}
+          </p>
+          <ul class="list-unstyled">
+            <li><strong>Thème:</strong> {{ dataset.dataSetTheme.name }}</li>
+            <li><strong>Créé par :</strong> {{ dataset.createdBy }}</li>
+            <li><strong>Date de publication:</strong> {{ dataset.createdOn | date: 'dd/MM/yyyy' }}</li>
+            <li><strong>Organisation :</strong> {{ dataset.dataProviderOrganisation.name }}</li>
+            <li><strong>Membre Organisation :</strong> {{ dataset.dataProviderOrganisationMember.email }}</li>
+          </ul>
+        </div>
+        <div class="card-footer d-flex justify-content-between bg-white border-top-0">
+          <button class="btn btn-info btn-sm" (click)="viewDataset(dataset.uuid)">
+            <i class="bi bi-eye"></i> View
+          </button>
+          <button class="btn btn-warning btn-sm" (click)="openUpdateModal(dataset)">
+            <i class="bi bi-pencil"></i> Update
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" (click)="openDeletePopup(dataset)">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+          <button class="btn btn-success btn-sm" (click)="downloadTemplate(dataset.id)">
+            <i class="bi bi-download"></i> Download
+          </button>
+          <button class="btn btn-success btn-sm" (click)="viewAsTable(dataset.id)">
+            <i class="bi bi-table"></i>  Tableau
+          </button>
+          <button class="btn btn-success btn-sm" (click)="viewAsChart(dataset.id,dataset.dataSetTheme.name)">
+            <img src="assets/images/DataVisualisations.png" alt="Visualisation icon" width="20" height="20" class="me-1 white-icon">
+            Visualisation
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</div>  
 
 <!-- Modal de confirmation de suppression -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -234,12 +232,7 @@
   </div>
 </div>
 
-
-
-
-
-
-
+<!-- Visualisation excel dans web -->
 <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -267,7 +260,7 @@
   </div>
 </div>
 
-
+<!-- Visualisation graphique des donnees finances dans web -->
 <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content p-3">
@@ -287,3 +280,4 @@
     </div>
   </div>
 </div>
+
