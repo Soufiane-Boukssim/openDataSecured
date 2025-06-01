@@ -461,4 +461,33 @@ export class DataSetDownloadComponent {
       alert('Impossible de télécharger le fichier Excel pour la visualisation de la carte.');
     });
   }
+
+  apiPreview: any = null; // contient les données JSON de l’API
+  getExcelAsJsonApi(datasetId: number): void {
+    this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
+      const blob = response.body as Blob;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+        const columnTitles = Object.keys(jsonData[0] || {});
+
+        this.apiPreview = {
+          columns: columnTitles,
+          rows: jsonData
+        };
+
+        // Ouvrir le modal Bootstrap
+        const apiModal = new bootstrap.Modal(document.getElementById('apiModal')!);
+        apiModal.show();
+      };
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+
 }
