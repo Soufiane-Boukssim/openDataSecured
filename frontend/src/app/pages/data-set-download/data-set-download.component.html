@@ -305,22 +305,140 @@
 
 
 <!-- Api -->
- <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+<!-- Modal API avec filtres -->
+<!-- Modal API avec filtres CORRIGÉ -->
+<div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="apiModalLabel">Aperçu JSON de l'API Excel</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
       <div class="modal-body">
-        <h6><strong>Colonnes :</strong></h6>
-        <pre>{{ apiPreview?.columns | json }}</pre>
+        
+        <!-- Section des filtres -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6><strong>Filtres des colonnes :</strong></h6>
+            <div class="mb-2">
+              <button 
+                class="btn btn-sm btn-outline-primary me-2" 
+                (click)="toggleAllColumns(true)"
+                [disabled]="areAllColumnsSelected()">
+                Tout sélectionner
+              </button>
+              <button 
+                class="btn btn-sm btn-outline-secondary" 
+                (click)="toggleAllColumns(false)"
+                [disabled]="areNoColumnsSelected()">
+                Tout désélectionner
+              </button>
+            </div>
+            <!-- PARTIE CORRIGÉE: Remplacement du ngModel par la nouvelle logique -->
+            <div class="form-check-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; padding: 10px; border-radius: 5px;">
+              <div class="form-check" *ngFor="let column of allColumns">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [value]="column"
+                  [checked]="isColumnSelected(column)"
+                  (change)="onColumnToggle(column, $event)"
+                  [id]="'column-' + column">
+                <label class="form-check-label" [for]="'column-' + column">
+                  {{ column }}
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <h6><strong>Nombre maximum de lignes :</strong></h6>
+            <div class="mb-3">
+              <label for="maxRowsInput" class="form-label">Limite (1 à {{ apiPreview?.rows?.length || 0 }}) :</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="maxRowsInput"
+                [(ngModel)]="maxRows"
+                (ngModelChange)="onMaxRowsChange()"
+                [min]="1" 
+                [max]="apiPreview?.rows?.length || 1">
+              <div class="form-text">
+                Total disponible: {{ apiPreview?.rows?.length || 0 }} lignes
+              </div>
+            </div>
+            
+            <!-- Boutons de raccourci pour les limites courantes -->
+            <div class="btn-group-sm mb-2">
+              <button 
+                class="btn btn-outline-info btn-sm me-1" 
+                (click)="maxRows = 5; onMaxRowsChange()"
+                [disabled]="!apiPreview?.rows || apiPreview.rows.length < 5">
+                5
+              </button>
+              <button 
+                class="btn btn-outline-info btn-sm me-1" 
+                (click)="maxRows = 10; onMaxRowsChange()"
+                [disabled]="!apiPreview?.rows || apiPreview.rows.length < 10">
+                10
+              </button>
+              <button 
+                class="btn btn-outline-info btn-sm me-1" 
+                (click)="maxRows = 25; onMaxRowsChange()"
+                [disabled]="!apiPreview?.rows || apiPreview.rows.length < 25">
+                25
+              </button>
+              <button 
+                class="btn btn-outline-info btn-sm" 
+                (click)="maxRows = apiPreview?.rows?.length || 1; onMaxRowsChange()"
+                [disabled]="!apiPreview?.rows">
+                Tout
+              </button>
+            </div>
+          </div>
+        </div>
 
-        <h6><strong>Données :</strong></h6>
-        <pre>{{ apiPreview?.rows | json }}</pre>
+        <hr>
+
+        <!-- Informations sur les filtres appliqués -->
+        <div class="alert alert-info" *ngIf="filteredData">
+          <small>
+            <strong>Filtres appliqués :</strong> 
+            {{ filteredData.columns.length }} colonnes sélectionnées sur {{ allColumns.length }} • 
+            {{ filteredData.rows.length }} lignes affichées sur {{ apiPreview?.rows?.length || 0 }}
+          </small>
+        </div>
+
+        <!-- Affichage des données filtrées -->
+        <div *ngIf="filteredData">
+          <h6><strong>Colonnes sélectionnées :</strong></h6>
+          <div class="mb-3">
+            <span class="badge bg-primary me-1 mb-1" *ngFor="let column of filteredData.columns">
+              {{ column }}
+            </span>
+          </div>
+
+          <h6><strong>Données ({{ filteredData.rows.length }} première(s) ligne(s)) :</strong></h6>
+          <div style="max-height: 400px; overflow: auto;">
+            <pre class="bg-light p-3">{{ filteredData.rows | json }}</pre>
+          </div>
+        </div>
+
+        <!-- Message si aucune donnée -->
+        <div *ngIf="!filteredData || filteredData.rows.length === 0" class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i> Aucune donnée à afficher avec les filtres actuels.
+        </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="applyFilters()"
+          [disabled]="areNoColumnsSelected()">
+          Actualiser l'aperçu
+        </button>
       </div>
     </div>
   </div>

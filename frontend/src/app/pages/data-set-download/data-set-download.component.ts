@@ -462,7 +462,19 @@ export class DataSetDownloadComponent {
     });
   }
 
-  apiPreview: any = null; // contient les données JSON de l’API
+
+  
+  // Dans votre composant TypeScript
+// Code TypeScript FINAL CORRIGÉ
+
+  apiPreview: any = null;
+  
+  // Nouvelles propriétés pour les filtres - INITIALISATION SÉCURISÉE
+  selectedColumns: string[] = [];
+  maxRows: number = 10;
+  allColumns: string[] = [];
+  filteredData: any = null;
+
   getExcelAsJsonApi(datasetId: number): void {
     this.dataSetService.downloadTemplate(datasetId).subscribe((response) => {
       const blob = response.body as Blob;
@@ -476,10 +488,22 @@ export class DataSetDownloadComponent {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
         const columnTitles = Object.keys(jsonData[0] || {});
 
+        // Stocker toutes les données originales
         this.apiPreview = {
           columns: columnTitles,
           rows: jsonData
         };
+
+        // INITIALISATION SÉCURISÉE des filtres
+        this.allColumns = [...columnTitles];
+        this.selectedColumns = [...columnTitles]; // Toutes les colonnes sélectionnées par défaut
+        this.maxRows = Math.min(10, jsonData.length);
+        
+        console.log('Colonnes initialisées:', this.allColumns);
+        console.log('Colonnes sélectionnées:', this.selectedColumns);
+
+        // Appliquer les filtres initiaux
+        this.applyFilters();
 
         // Ouvrir le modal Bootstrap
         const apiModal = new bootstrap.Modal(document.getElementById('apiModal')!);
@@ -489,5 +513,116 @@ export class DataSetDownloadComponent {
     });
   }
 
+  // Méthode pour appliquer les filtres
+  applyFilters(): void {
+    if (!this.apiPreview || !this.apiPreview.rows) {
+      console.log('Pas de données à filtrer');
+      return;
+    }
 
+    let filteredRows = [...this.apiPreview.rows];
+
+    // Limiter le nombre de lignes
+    if (this.maxRows > 0) {
+      filteredRows = filteredRows.slice(0, this.maxRows);
+    }
+
+    // Filtrer les colonnes sélectionnées
+    if (this.selectedColumns && this.selectedColumns.length > 0) {
+      filteredRows = filteredRows.map((row: any) => {
+        const filteredRow: any = {};
+        this.selectedColumns.forEach(column => {
+          if (row.hasOwnProperty(column)) {
+            filteredRow[column] = row[column];
+          }
+        });
+        return filteredRow;
+      });
+    }
+
+    this.filteredData = {
+      columns: this.selectedColumns || [],
+      rows: filteredRows || []
+    };
+
+    console.log('Filtres appliqués:', this.filteredData);
+  }
+
+  // NOUVELLE MÉTHODE: Vérifier si une colonne est sélectionnée
+  isColumnSelected(column: string): boolean {
+    if (!this.selectedColumns || !Array.isArray(this.selectedColumns)) {
+      return false;
+    }
+    return this.selectedColumns.includes(column);
+  }
+
+  // NOUVELLE MÉTHODE: Gérer le toggle d'une colonne
+  onColumnToggle(column: string, event: any): void {
+    // S'assurer que selectedColumns est un tableau
+    if (!Array.isArray(this.selectedColumns)) {
+      this.selectedColumns = [];
+    }
+    
+    if (event.target.checked) {
+      // Ajouter la colonne si elle n'est pas déjà présente
+      if (!this.selectedColumns.includes(column)) {
+        this.selectedColumns.push(column);
+      }
+    } else {
+      // Retirer la colonne
+      const index = this.selectedColumns.indexOf(column);
+      if (index > -1) {
+        this.selectedColumns.splice(index, 1);
+      }
+    }
+    
+    console.log('Colonne toggle:', column, 'Sélectionnées:', this.selectedColumns);
+    this.applyFilters();
+  }
+
+  // Méthode pour gérer le changement du nombre maximum de lignes
+  onMaxRowsChange(): void {
+    if (this.maxRows < 1) {
+      this.maxRows = 1;
+    } else if (this.apiPreview?.rows && this.maxRows > this.apiPreview.rows.length) {
+      this.maxRows = this.apiPreview.rows.length;
+    }
+    this.applyFilters();
+  }
+
+  // Méthode pour sélectionner/désélectionner toutes les colonnes
+  toggleAllColumns(selectAll: boolean): void {
+    if (!Array.isArray(this.allColumns)) {
+      console.error('allColumns n\'est pas un tableau');
+      return;
+    }
+
+    if (selectAll) {
+      this.selectedColumns = [...this.allColumns];
+    } else {
+      this.selectedColumns = [];
+    }
+    
+    console.log('Toggle all:', selectAll, 'Résultat:', this.selectedColumns);
+    this.applyFilters();
+  }
+
+  // Méthode pour vérifier si toutes les colonnes sont sélectionnées
+  areAllColumnsSelected(): boolean {
+    if (!Array.isArray(this.selectedColumns) || !Array.isArray(this.allColumns)) {
+      return false;
+    }
+    return this.selectedColumns.length === this.allColumns.length && this.allColumns.length > 0;
+  }
+
+  // Méthode pour vérifier si aucune colonne n'est sélectionnée
+  areNoColumnsSelected(): boolean {
+    if (!Array.isArray(this.selectedColumns)) {
+      return true;
+    }
+    return this.selectedColumns.length === 0;
+  }
+
+
+  
 }
