@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,8 +34,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Ne pas filtrer les routes GET ou POST vers /api/themes/**
-        return path.startsWith("/api/themes") && (method.equals("GET") );
+        // je dois ajouter tous les routes publics ici
+        return path.equals("/api/login") || path.startsWith("/api/themes") && (method.equals("GET") );
     }
 
     @Override
@@ -46,31 +45,51 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String authHeader = request.getHeader("Authorization");
 
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                String email = jwtService.extractEmail(token);
-
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = context.getBean(MyUserDetailsService.class)
-                            .loadUserByUsername(email);
-
-                    if (jwtService.validateToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails,
-                                        null,
-                                        userDetails.getAuthorities()
-                                );
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
-                }
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                // Token absent ou mal formé → rejeter la requête
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Unauthorized: Token missing or invalid");
+                return; // stop la chaîne de filtres
             }
-        } catch (Exception e) {
-            // L'exception est capturée, mais elle n'est pas interceptée par ce filtre
-            System.err.println("JWT Filter error: " + e.getMessage());
-        }
 
-        filterChain.doFilter(request, response); // Permet à l'exception de remonter
+            String token = authHeader.substring(7);
+            String email = jwtService.extractEmail(token);
+
+            if (email == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Unauthorized: Invalid token");
+                return;
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = context.getBean(MyUserDetailsService.class)
+                        .loadUserByUsername(email);
+
+                if (!jwtService.validateToken(token, userDetails)) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Unauthorized: Token validation failed");
+                    return;
+                }
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+
+            // Si tout est OK, continue la chaîne
+            filterChain.doFilter(request, response);
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized: " + e.getMessage());
+        }
     }
+
+
+
 }
