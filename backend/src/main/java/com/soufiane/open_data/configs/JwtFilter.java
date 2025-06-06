@@ -33,10 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final Map<String, List<String>> PUBLIC_ROUTES = Map.of(
             "/api/login", List.of("*"),
             "/api/register", List.of("*"),
-            "/api/themes", List.of("*"),
-            "/api/data-provider/organisations", List.of("*"),
-            "/api/data-provider/organisation-members", List.of("*"),
-            "/api/datasets", List.of("*")
+            "/api/themes", List.of("GET"),
+            "/api/data-provider/organisations", List.of("GET"),
+            "/api/data-provider/organisation-members", List.of("GET"),
+            "/api/datasets", List.of("GET")
     );
 
 
