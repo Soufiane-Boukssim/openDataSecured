@@ -15,6 +15,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -28,14 +30,23 @@ public class JwtFilter extends OncePerRequestFilter {
         this.context = context;
     }
 
-    // Ignorer le filtre JWT pour les routes publiques (ex: /api/themes/**)
+    private static final Map<String, List<String>> PUBLIC_ROUTES = Map.of(
+            "/api/login", List.of("*"),
+            "/api/register", List.of("*"),
+            "/api/themes", List.of("*"),
+            "/api/data-provider/organisations", List.of("*"),
+            "/api/data-provider/organisation-members", List.of("*"),
+            "/api/datasets", List.of("*")
+    );
+
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         String method = request.getMethod();
-
-        // je dois ajouter tous les routes publics ici
-        return path.equals("/api/login") || path.startsWith("/api/themes") && (method.equals("GET") );
+        return PUBLIC_ROUTES.entrySet().stream()
+                .anyMatch(entry -> path.startsWith(entry.getKey())
+                        && (entry.getValue().contains(method) || entry.getValue().contains("*")));
     }
 
     @Override
