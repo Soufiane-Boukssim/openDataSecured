@@ -82,3 +82,35 @@ input[type="search"]:focus {
 .white-icon {
   filter: brightness(0) invert(1);
 }
+
+
+
+
+
+/* Par défaut on affiche le texte */
+.btn-text {
+  display: inline;
+}
+
+/* À partir de xs jusqu'à sm (petits écrans), cacher le texte */
+@media (max-width: 576px) {
+  .btn-text {
+    display: none;
+  }
+  
+  /* Optionnel : réduire un peu la largeur des boutons */
+  .card-footer .btn {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    width: 36px; /* ou auto si tu préfères */
+  }
+  
+  /* Centrer les icônes */
+  .card-footer .btn i,
+  .card-footer .btn img {
+    margin: 0;
+    display: block;
+    text-align: center;
+  }
+}
+

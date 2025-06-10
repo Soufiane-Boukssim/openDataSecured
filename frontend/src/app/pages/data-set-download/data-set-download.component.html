@@ -26,30 +26,30 @@
             <li><strong>Membre Organisation :</strong> {{ dataset.dataProviderOrganisationMember.email }}</li>
           </ul>
         </div>
-        <div class="card-footer d-flex justify-content-between bg-white border-top-0">
-          <button class="btn btn-info btn-sm" (click)="viewDataset(dataset.uuid)">
-            <i class="bi bi-eye"></i> View
-          </button>
-          <button class="btn btn-warning btn-sm" (click)="openUpdateModal(dataset)">
-            <i class="bi bi-pencil"></i> Update
-          </button>
-          <button type="button" class="btn btn-danger btn-sm" (click)="openDeletePopup(dataset)">
-            <i class="bi bi-trash"></i> Delete
-          </button>
-          <button class="btn btn-success btn-sm" (click)="downloadTemplate(dataset.id)">
-            <i class="bi bi-download"></i> Download
-          </button>
-          <button class="btn btn-success btn-sm" (click)="viewAsTable(dataset.id)">
-            <i class="bi bi-table"></i>  Tableau
-          </button>
-          <button class="btn btn-success btn-sm" (click)="viewAsChart(dataset.id,dataset.dataSetTheme.name)">
-            <img src="assets/images/DataVisualisations.png" alt="Visualisation icon" width="20" height="20" class="me-1 white-icon">
-            Visualisation
-          </button>
-          <button class="btn btn-success btn-sm" (click)="getExcelAsJsonApi(dataset.id)">
-            <i class="bi bi-gear"></i>  API
-          </button>
-        </div>
+<div class="card-footer d-flex justify-content-start bg-white border-top-0 flex-wrap">
+  <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewDataset(dataset.uuid)">
+    <i class="bi bi-eye"></i> <span class="btn-text">View</span>
+  </button>
+  <button class="btn btn-warning btn-sm me-1 mb-1" (click)="openUpdateModal(dataset)">
+    <i class="bi bi-pencil"></i> <span class="btn-text">Update</span>
+  </button>
+  <button type="button" class="btn btn-danger btn-sm me-1 mb-1" (click)="openDeletePopup(dataset)">
+    <i class="bi bi-trash"></i> <span class="btn-text">Delete</span>
+  </button>
+  <button class="btn btn-success btn-sm me-1 mb-1" (click)="downloadTemplate(dataset.id)">
+    <i class="bi bi-download"></i> <span class="btn-text">Download</span>
+  </button>
+  <button class="btn btn-success btn-sm me-1 mb-1" (click)="viewAsTable(dataset.id)">
+    <i class="bi bi-table"></i> <span class="btn-text">Tableau</span>
+  </button>
+  <button class="btn btn-success btn-sm me-1 mb-1" (click)="viewAsChart(dataset.id,dataset.dataSetTheme.name)">
+    <img src="assets/images/DataVisualisations.png" alt="Visualisation icon" width="20" height="20" class="me-1 white-icon">
+    <span class="btn-text">Visualisation</span>
+  </button>
+  <button class="btn btn-success btn-sm me-1 mb-1" (click)="getExcelAsJsonApi(dataset.id)">
+    <i class="bi bi-gear"></i> <span class="btn-text">API</span>
+  </button>
+</div>
       </div>
     </div>
   </div>
