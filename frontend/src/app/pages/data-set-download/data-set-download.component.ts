@@ -502,6 +502,10 @@ export class DataSetDownloadComponent {
         console.log('Colonnes initialisées:', this.allColumns);
         console.log('Colonnes sélectionnées:', this.selectedColumns);
 
+      const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+      this.jsonApiUrl = URL.createObjectURL(jsonBlob); // 👉 stocke le lien dans une variable du composant
+
+
         // Appliquer les filtres initiaux
         this.applyFilters();
 
@@ -624,5 +628,22 @@ export class DataSetDownloadComponent {
   }
 
 
-  
+
+
+
+
+  jsonApiUrl: string | null = null;
+
+  copyJsonUrl(inputElement: HTMLInputElement): void {
+  inputElement.select();
+  inputElement.setSelectionRange(0, 99999); // Pour mobile
+  navigator.clipboard.writeText(inputElement.value)
+    .then(() => {
+      console.log('Lien copié dans le presse-papiers');
+    })
+    .catch((err) => {
+      console.error('Erreur lors de la copie', err);
+    });
+}
+
 }

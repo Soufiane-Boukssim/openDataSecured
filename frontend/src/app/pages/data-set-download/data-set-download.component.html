@@ -316,6 +316,24 @@
       </div>
       <div class="modal-body">
         
+<!-- 🔗 Lien vers l'objet JSON brut + bouton copier -->
+<div class="mb-3">
+  <h6><strong>Aperçu brut JSON :</strong></h6>
+  
+  <div *ngIf="jsonApiUrl" class="d-flex align-items-center gap-2">
+    <a [href]="jsonApiUrl" target="_blank" class="btn btn-outline-primary btn-sm">
+      Ouvrir dans une nouvelle page
+    </a>
+    
+    <input type="text" [value]="jsonApiUrl" readonly class="form-control form-control-sm w-50" #jsonUrlInput>
+    
+    <button class="btn btn-outline-secondary btn-sm" (click)="copyJsonUrl(jsonUrlInput)">
+      Copier le lien
+    </button>
+  </div>
+</div>
+
+
         <!-- Section des filtres -->
         <div class="row mb-4">
           <div class="col-md-6">
