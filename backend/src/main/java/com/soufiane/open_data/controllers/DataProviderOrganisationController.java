@@ -2,10 +2,13 @@ package com.soufiane.open_data.controllers;
 
 import com.soufiane.open_data.dtos.dataProviderOrganisation.DataProviderOrganisationResponse;
 import com.soufiane.open_data.dtos.dataProviderOrganisationMember.DataProviderOrganisationMemberResponse;
+import com.soufiane.open_data.dtos.dataProviderOrganisationMember.SimplifiedDataProviderOrganisationMemberResponse;
 import com.soufiane.open_data.services.dataProviderOrganisation.DataProviderOrganisationService;
+import com.soufiane.open_data.services.dataProviderOrganisationMember.DataProviderOrganisationMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -15,6 +18,27 @@ import java.util.UUID;
 @RestController @RequiredArgsConstructor @RequestMapping("/api/data-provider/organisations")
 public class DataProviderOrganisationController {
     private final DataProviderOrganisationService dataProviderOrganisationService;
+    private final DataProviderOrganisationMemberService dataProviderOrganisationMemberService;
+
+    @GetMapping("/by-current-user")
+    public ResponseEntity<DataProviderOrganisationResponse> getOrganisationOfCurrentProvider() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        DataProviderOrganisationMemberResponse memberResponse = dataProviderOrganisationMemberService.getDataProviderMemberByEmail(email);
+        if (memberResponse == null) {
+            return ResponseEntity.notFound().build(); // membre non trouvé
+        }
+
+        UUID organisationUuid = memberResponse.getDataProviderOrganisation().getUuid();
+        DataProviderOrganisationResponse organisationResponse = dataProviderOrganisationService.getDataProviderOrganisationById(organisationUuid);
+        if (organisationResponse == null) {
+            return ResponseEntity.notFound().build(); // organisation non trouvée
+        }
+
+        return ResponseEntity.ok(organisationResponse);
+    }
+
+
 
     @GetMapping("/get/all")
     public List<DataProviderOrganisationResponse> getAllProviders() {
@@ -82,6 +106,21 @@ public class DataProviderOrganisationController {
         return ResponseEntity.ok("User with the id: "+userId+" is assigned successfully to the organisation with the id: "+organisationId);
     }
 
+    @GetMapping("/by-email")
+    public ResponseEntity<SimplifiedDataProviderOrganisationMemberResponse> getCurrentMemberByEmail() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        DataProviderOrganisationMemberResponse member = dataProviderOrganisationMemberService.getDataProviderMemberByEmail(email);
+        if (member == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SimplifiedDataProviderOrganisationMemberResponse simplified = new SimplifiedDataProviderOrganisationMemberResponse();
+        simplified.setUuid(member.getUuid());
+        simplified.setEmail(member.getEmail());
+
+        return ResponseEntity.ok(simplified);
+    }
 
 
 }

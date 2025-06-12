@@ -18,7 +18,7 @@
   .box {
     position: relative;
     width: 380px;
-    height: 450px;
+    height: 550px;
     background: #1c1c1c;
     border-radius: 8px;
     overflow: hidden;
@@ -170,7 +170,8 @@
     text-decoration: none;
   }
   
-  .box form .links a:hover {
+  .box form .links a:hover,
+  .box form .links a:nth-child(2) {
     color: #fff;
   }
   
@@ -191,5 +192,4 @@
   #submit:active {
     opacity: 0.8;
   }
-
   

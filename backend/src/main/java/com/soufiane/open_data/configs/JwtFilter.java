@@ -34,7 +34,10 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/login", List.of("*"),
             "/api/register", List.of("*"),
             "/api/themes", List.of("GET"),
-            "/api/data-provider/organisations", List.of("GET"),
+            "/api/data-provider/organisations/get/**", List.of("GET"),      // ✅ Couvre /get/all, /get/byId/*, /get/byName/*
+            "/api/data-provider/organisations/count", List.of("GET"),       // ✅ Couvre /count
+            "/api/data-provider/organisations/upload/image/**", List.of("GET"), // ✅ Couvre /upload/image/*
+            "/api/data-provider/organisations/*/members", List.of("GET"),   // ✅ Couvre /{id}/members
             "/api/data-provider/organisation-members", List.of("GET"),
             "/api/datasets", List.of("GET")
     );

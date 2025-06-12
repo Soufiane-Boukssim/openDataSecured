@@ -20,6 +20,10 @@ export class AuthService {
     }
   }
 
+  register(user: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, user);
+  }
+
   login(email: string, password: string): Observable<any> {
     const body = { email, password };
     return this.http.post<any>(`${this.apiUrl}/login`, body);
@@ -34,6 +38,21 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('authToken');
+  }
+
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      // Adaptation selon la structure de ton JWT
+      return decoded.role || (decoded.roles && decoded.roles.length > 0 ? decoded.roles[0] : null) || null;
+    } catch (e) {
+      console.error('Erreur lors du décodage du JWT', e);
+      return null;
+    }
   }
 
   logout(): void {
@@ -104,7 +123,7 @@ export class AuthService {
       // Pour debug : afficher le temps restant
       const timeLeft = Math.max(0, Math.floor((expiration - now) / 1000));
       if (timeLeft > 0) {
-        console.log(`⏰ Temps restant: ${timeLeft} secondes`);
+        // console.log(`⏰ Temps restant: ${timeLeft} secondes`);
       }
       
       return now >= expiration;

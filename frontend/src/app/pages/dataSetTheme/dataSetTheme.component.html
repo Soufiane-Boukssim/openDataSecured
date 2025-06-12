@@ -115,10 +115,10 @@
             <button type="button" class="btn btn-primary btn-sm" (click)="viewTheme(theme.uuid)">
               <i class="bi bi-eye"></i> View
             </button>
-            <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(theme)">
+            <button *ngIf="userRole === 'ROLE_ADMIN'" type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(theme)">
               <i class="bi bi-pencil-square"></i> Update
             </button>
-            <button type="button" class="btn btn-danger btn-sm" (click)="deleteTheme(theme.uuid)">
+            <button *ngIf="userRole === 'ROLE_ADMIN'" type="button" class="btn btn-danger btn-sm" (click)="deleteTheme(theme.uuid)">
               <i class="bi bi-trash"></i> Delete
             </button>
           </div>

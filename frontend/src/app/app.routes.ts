@@ -11,6 +11,7 @@ import { DataProviderOrganisationComponent } from './pages/data-provider-organis
 import { DataProviderMemberComponent } from './pages/data-provider-member/data-provider-member.component';
 import { DataSetUploadComponent } from './pages/data-set-upload/data-set-upload.component';
 import { DataSetDownloadComponent } from './pages/data-set-download/data-set-download.component';
+import { SignupComponent } from './pages/signup/signup.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'admin/login', pathMatch: 'full' },
@@ -19,6 +20,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'login', pathMatch: 'full' }, 
       { path: 'login', component: LoginComponent },
+      { path: 'signup', component: SignupComponent },
       {
         path: '',
         component: MainComponent,

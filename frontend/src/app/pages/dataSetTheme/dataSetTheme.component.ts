@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DataSetThemeRequest } from '../../models/DataSetThemeRequest';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 import { Modal } from 'bootstrap';
+import { AuthService } from '../../services/auth.service';
 
 declare var bootstrap: any;
 
@@ -21,11 +22,11 @@ export class DataSetThemeComponent implements AfterViewInit {
   private deleteModal!: Modal;
   selectedTheme: DataSetThemeRequest | null = null;
 
-  constructor(private themeService: DataSetThemeService) {}
+  constructor(private themeService: DataSetThemeService, private authService: AuthService) {}
 
-  ngOnInit(): void {
-    this.loadThemes();
-  }
+  // ngOnInit(): void {
+  //   this.loadThemes();
+  // }
 
   ngAfterViewInit(): void {
     const modalElement = document.getElementById('deleteConfirmationModal');
@@ -187,7 +188,13 @@ submitAdd(): void {
 }
 
 
+  userRole: string | null = null;
 
+  ngOnInit(): void {
+    this.loadThemes();
+    this.userRole = this.authService.getUserRole();
+    console.log('Rôle utilisateur:', this.userRole);
+  }
 
 
 }

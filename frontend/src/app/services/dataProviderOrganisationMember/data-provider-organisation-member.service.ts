@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { DataProviderOrganisationServiceService } from '../dataProviderOrganisation/data-provider-organisation-service.service';
 import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
+import { SimplifiedDataProviderOrganisationMemberResponse } from '../../models/SimplifiedDataProviderOrganisationMemberResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,19 @@ export class DataProviderOrganisationMemberService {
     private http: HttpClient,
     private organisationService: DataProviderOrganisationServiceService
   ) {}
+
+  getOrganisationOfCurrentProvider(): Observable<DataProviderOrganisationMemberRequest> {
+  return this.http.get<DataProviderOrganisationMemberRequest>(
+    `${environment.apiUrl}/data-provider/organisations/by-current-user`
+  );
+}
+
+getCurrentMember(): Observable<SimplifiedDataProviderOrganisationMemberResponse> {
+  return this.http.get<SimplifiedDataProviderOrganisationMemberResponse>(
+    'http://localhost:8080/api/data-provider/organisations/by-current-user' 
+  );
+}
+
 
   getAllDataProviderOrganisationMembers(): Observable<DataProviderOrganisationMemberRequest[]> {
     return this.http.get<DataProviderOrganisationMemberRequest[]>(`${this.apiUrl}/get/all`);

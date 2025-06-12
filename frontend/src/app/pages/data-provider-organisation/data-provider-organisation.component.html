@@ -89,10 +89,10 @@
             <button type="button" class="btn btn-primary btn-sm" (click)="viewOrganisation(org.uuid)">
               <i class="bi bi-eye"></i> View
             </button>
-            <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(org)">
+            <button  *ngIf="userRole === 'ROLE_ADMIN'"  type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(org)">
               <i class="bi bi-pencil-square"></i> Update
             </button>
-            <button type="button" class="btn btn-danger btn-sm" (click)="deleteOrganisation(org.uuid)">
+            <button  *ngIf="userRole === 'ROLE_ADMIN'"  type="button" class="btn btn-danger btn-sm" (click)="deleteOrganisation(org.uuid)">
               <i class="bi bi-trash"></i> Delete
             </button>
           </div>

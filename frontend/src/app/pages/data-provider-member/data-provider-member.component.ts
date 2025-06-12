@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 
 declare var bootstrap: any;
@@ -34,7 +35,9 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
   selectedOrganisationId: string | null = null;
 
 
-  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router) { }
+  constructor(private dataProviderOrganisationMemberService: DataProviderOrganisationMemberService, private router: Router, private authService: AuthService, private organisationService:DataProviderOrganisationMemberService) { }
+
+  userRole: string | null = null;
 
   ngOnInit(): void {
     this.loadMembers();
@@ -48,11 +51,26 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     }
   }
 
+
   loadMembers(): void {
+  this.userRole = this.authService.getUserRole();
+
+  if (this.userRole === 'ROLE_ADMIN') {
     this.dataProviderOrganisationMemberService.getAllDataProviderOrganisationMembers().subscribe(data => {
       this.members = data;
     });
+  } else if (this.userRole === 'ROLE_PROVIDER') {
+    // Appel pour obtenir l'organisation du provider connecté
+    this.organisationService.getOrganisationOfCurrentProvider().subscribe(org => {
+      this.dataProviderOrganisationMemberService.getAllDataProviderOrganisationMembers().subscribe(data => {
+        this.members = data.filter(member =>
+          member.dataProviderOrganisation?.uuid === org.uuid
+        );
+      });
+    });
   }
+}
+
 
   loadOrganisations(): void {
     this.dataProviderOrganisationMemberService.getAllOrganisations().subscribe({

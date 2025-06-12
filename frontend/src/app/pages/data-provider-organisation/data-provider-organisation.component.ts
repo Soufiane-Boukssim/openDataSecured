@@ -5,6 +5,7 @@ import { Modal } from 'bootstrap';
 import { DataProviderOrganisationRequest } from '../../models/DataProviderOrganisationRequest';
 import { DataProviderOrganisationServiceService } from '../../services/dataProviderOrganisation/data-provider-organisation-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 declare var bootstrap: any;
 
@@ -32,12 +33,17 @@ export class DataProviderOrganisationComponent implements OnInit, AfterViewInit 
 
   private organisationUuidToView: string | null = null;
 
-  constructor(private orgService: DataProviderOrganisationServiceService, private router: Router,private route: ActivatedRoute) {
+  constructor(private orgService: DataProviderOrganisationServiceService, private router: Router,private route: ActivatedRoute, private authService: AuthService) {
     const navigation = this.router.getCurrentNavigation();
     this.organisationUuidToView = navigation?.extras?.state?.['organisationUuidToView'] as string | null;
   }
 
+  userRole: string | null = null;
+
   ngOnInit(): void {
+    this.userRole = this.authService.getUserRole();
+    console.log('Rôle utilisateur:', this.userRole);
+
     this.loadOrganisations(() => {
       if (this.organisationUuidToView) {
         this.viewOrganisation(this.organisationUuidToView);
@@ -45,6 +51,9 @@ export class DataProviderOrganisationComponent implements OnInit, AfterViewInit 
       }
     });
   }
+
+
+
 
   ngAfterViewInit(): void {
     const deleteModalElement = document.getElementById('deleteConfirmationModal');

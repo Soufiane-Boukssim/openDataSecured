@@ -8,7 +8,9 @@
     <textarea [(ngModel)]="description" name="description" required></textarea><br><br>
 
     <label for="memberUuid">Organisation Member UUID :</label>
-    <input type="text" [(ngModel)]="dataProviderOrganisationMemberUuid" name="dataProviderOrganisationMemberUuid" required><br><br>
+    <input type="text" [(ngModel)]="dataProviderOrganisationMemberUuid"
+        name="dataProviderOrganisationMemberUuid" 
+        [readonly]="userRole === 'ROLE_PROVIDER'" required>
 
     <div class="mb-3">
     <label for="themeUuid" class="form-label">Thème :</label>
