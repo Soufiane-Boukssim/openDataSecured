@@ -57,7 +57,7 @@ export class SignupComponent {
       next: (result) => {
         if (result !== null) {
           console.log('Tout est réussi, redirection vers /home');
-          this.router.navigate(['/home']);
+          this.router.navigate(['/admin/home']);
         }
       }
     });

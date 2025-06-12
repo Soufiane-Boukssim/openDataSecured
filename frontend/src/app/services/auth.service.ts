@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -24,10 +25,17 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, user);
   }
 
-  login(email: string, password: string): Observable<any> {
-    const body = { email, password };
-    return this.http.post<any>(`${this.apiUrl}/login`, body);
-  }
+login(email: string, password: string): Observable<any> {
+  const body = { email, password };
+  return this.http.post<any>(`${this.apiUrl}/login`, body).pipe(
+    tap((response: any) => {
+      const token = response.token;
+      if (token) {
+        localStorage.setItem('authToken', token); // ou sessionStorage
+      }
+    })
+  );
+}
 
   setToken(token: string): void {
     localStorage.setItem('authToken', token);
