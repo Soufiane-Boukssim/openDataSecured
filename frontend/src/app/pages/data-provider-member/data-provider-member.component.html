@@ -70,13 +70,18 @@
             <button type="button" class="btn btn-primary btn-sm" (click)="viewMember(member.uuid)">
               <i class="bi bi-eye"></i> Voir
             </button>
-            <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(member)">
-              <i class="bi bi-pencil-square"></i> Update
-            </button>
 
-            <button type="button" class="btn btn-danger btn-sm" (click)="askDeleteMember(member.uuid)">
-              <i class="bi bi-trash"></i> Supprimer
-            </button>
+            <!-- Boutons Update et Supprimer - conditionnels -->
+            <ng-container *ngIf="canEditMember(member)">
+              <button type="button" class="btn btn-warning btn-sm" (click)="openUpdateModal(member)">
+                <i class="bi bi-pencil-square"></i> Update
+              </button>
+
+              <button type="button" class="btn btn-danger btn-sm" (click)="askDeleteMember(member.uuid)">
+                <i class="bi bi-trash"></i> Supprimer
+              </button>
+            </ng-container>
+
           </div>
         </div>
       </div>

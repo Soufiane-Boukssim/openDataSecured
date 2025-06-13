@@ -321,7 +321,21 @@ closeMemberModal(reset: boolean = true): void {
   }
 }
 
-
+canEditMember(member: DataProviderOrganisationMemberRequest): boolean {
+  // Si l'utilisateur est ADMIN, il peut tout faire
+  if (this.userRole === 'ROLE_ADMIN') {
+    return true;
+  }
+  
+  // Si l'utilisateur est PROVIDER, il ne peut éditer que son propre compte
+  if (this.userRole === 'ROLE_PROVIDER') {
+    const currentUserEmail = this.authService.getUserEmail();
+    return member.email === currentUserEmail;
+  }
+  
+  // Pour les autres rôles, pas d'édition
+  return false;
+}
 
 
 
