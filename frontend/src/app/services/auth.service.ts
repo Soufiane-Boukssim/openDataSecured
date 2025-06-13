@@ -32,6 +32,8 @@ login(email: string, password: string): Observable<any> {
       const token = response.token;
       if (token) {
         localStorage.setItem('authToken', token); // ou sessionStorage
+        localStorage.setItem('userEmail', email);  // ici on stocke l'email
+
       }
     })
   );
@@ -162,4 +164,10 @@ login(email: string, password: string): Observable<any> {
       return 0;
     }
   }
+
+  getUserEmail(): string | null {
+  // exemple basique si tu stockes l'email dans localStorage après login
+  return localStorage.getItem('userEmail');
+}
+
 }

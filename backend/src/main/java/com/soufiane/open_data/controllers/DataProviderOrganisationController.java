@@ -29,6 +29,11 @@ public class DataProviderOrganisationController {
             return ResponseEntity.notFound().build(); // membre non trouvé
         }
 
+        if (memberResponse.getDataProviderOrganisation() == null) {
+            // Le membre n'a pas d'organisation associée
+            return ResponseEntity.noContent().build(); // HTTP 204 No Content
+        }
+
         UUID organisationUuid = memberResponse.getDataProviderOrganisation().getUuid();
         DataProviderOrganisationResponse organisationResponse = dataProviderOrganisationService.getDataProviderOrganisationById(organisationUuid);
         if (organisationResponse == null) {

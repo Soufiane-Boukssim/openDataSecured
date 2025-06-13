@@ -51,25 +51,37 @@ export class DataProviderMemberComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  loadMembers(): void {
+loadMembers(): void {
   this.userRole = this.authService.getUserRole();
 
   if (this.userRole === 'ROLE_ADMIN') {
     this.dataProviderOrganisationMemberService.getAllDataProviderOrganisationMembers().subscribe(data => {
-      this.members = data;
+      this.members = data;  // affiche tout
     });
   } else if (this.userRole === 'ROLE_PROVIDER') {
-    // Appel pour obtenir l'organisation du provider connecté
-    this.organisationService.getOrganisationOfCurrentProvider().subscribe(org => {
-      this.dataProviderOrganisationMemberService.getAllDataProviderOrganisationMembers().subscribe(data => {
-        this.members = data.filter(member =>
-          member.dataProviderOrganisation?.uuid === org.uuid
-        );
-      });
+    this.organisationService.getOrganisationOfCurrentProvider().subscribe({
+      next: (org) => {
+        this.dataProviderOrganisationMemberService.getAllDataProviderOrganisationMembers().subscribe(members => {
+          if (!org) {
+            // Pas d'organisation => afficher uniquement le membre connecté
+            const email = this.authService.getUserEmail(); // méthode que tu peux créer dans AuthService
+            this.members = members.filter(m => m.email === email);
+          } else {
+            // Organisation existante => afficher les membres de la même organisation
+            this.members = members.filter(member =>
+              member.dataProviderOrganisation?.uuid === org.uuid
+            );
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération de l’organisation du provider :', err);
+        this.members = [];
+      }
     });
   }
 }
+
 
 
   loadOrganisations(): void {
