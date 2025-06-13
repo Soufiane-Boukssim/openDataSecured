@@ -1,6 +1,7 @@
 package com.soufiane.open_data.controllers;
 
 import com.soufiane.open_data.dtos.dataProviderOrganisation.DataProviderOrganisationResponse;
+import com.soufiane.open_data.dtos.dataProviderOrganisation.SimplifiedDataProviderOrganisationResponse;
 import com.soufiane.open_data.dtos.dataProviderOrganisationMember.DataProviderOrganisationMemberResponse;
 import com.soufiane.open_data.dtos.dataProviderOrganisationMember.SimplifiedDataProviderOrganisationMemberResponse;
 import com.soufiane.open_data.services.dataProviderOrganisation.DataProviderOrganisationService;
@@ -20,11 +21,14 @@ public class DataProviderOrganisationController {
     private final DataProviderOrganisationService dataProviderOrganisationService;
     private final DataProviderOrganisationMemberService dataProviderOrganisationMemberService;
 
-    @GetMapping("/by-current-user")
+    @GetMapping("/by-current-user2")
     public ResponseEntity<DataProviderOrganisationResponse> getOrganisationOfCurrentProvider() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("Email utilisateur connecté : " + email);
 
         DataProviderOrganisationMemberResponse memberResponse = dataProviderOrganisationMemberService.getDataProviderMemberByEmail(email);
+        System.out.println("UUID : " + memberResponse.getUuid());
+
         if (memberResponse == null) {
             return ResponseEntity.notFound().build(); // membre non trouvé
         }
@@ -44,6 +48,19 @@ public class DataProviderOrganisationController {
     }
 
 
+    @GetMapping("/by-current-user")
+    public ResponseEntity<String> getCurrentUserUuid() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        DataProviderOrganisationMemberResponse memberResponse =
+                dataProviderOrganisationMemberService.getDataProviderMemberByEmail(email);
+
+        if (memberResponse == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(memberResponse.getUuid().toString());
+    }
 
     @GetMapping("/get/all")
     public List<DataProviderOrganisationResponse> getAllProviders() {

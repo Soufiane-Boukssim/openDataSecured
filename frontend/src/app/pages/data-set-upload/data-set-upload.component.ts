@@ -37,11 +37,11 @@ ngOnInit(): void {
   this.userRole = this.authService.getUserRole();
 
   if (this.userRole === 'ROLE_PROVIDER') {
-    this.dataProviderOrganisationMemberService.getCurrentMember().subscribe({
-      next: (member: SimplifiedDataProviderOrganisationMemberResponse) => {
-          console.log('UUID récupéré:', member.uuid); // 👈
+    this.dataProviderOrganisationMemberService.getCurrentMemberUuid().subscribe({
+      next: (uuid: string) => {
+          console.log('UUID récupéré:', uuid); // 👈
 
-        this.dataProviderOrganisationMemberUuid = member.uuid;
+        this.dataProviderOrganisationMemberUuid = uuid;
       },
       error: (err) => console.error('Erreur lors de la récupération du membre connecté:', err)
     });

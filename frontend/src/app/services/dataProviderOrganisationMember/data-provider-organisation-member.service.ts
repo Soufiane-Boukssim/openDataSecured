@@ -21,14 +21,20 @@ export class DataProviderOrganisationMemberService {
 
   getOrganisationOfCurrentProvider(): Observable<DataProviderOrganisationMemberRequest> {
   return this.http.get<DataProviderOrganisationMemberRequest>(
-    `${environment.apiUrl}/data-provider/organisations/by-current-user`
+    `${environment.apiUrl}/data-provider/organisations/by-current-user2`
   );
 }
 
 getCurrentMember(): Observable<SimplifiedDataProviderOrganisationMemberResponse> {
   return this.http.get<SimplifiedDataProviderOrganisationMemberResponse>(
-    'http://localhost:8080/api/data-provider/organisations/by-current-user' 
+    'http://localhost:8080/api/data-provider/organisations/by-current-user2' 
   );
+}
+
+getCurrentMemberUuid(): Observable<string> {
+  return this.http.get('http://localhost:8080/api/data-provider/organisations/by-current-user', {
+    responseType: 'text'  // important pour dire qu'on attend un simple texte
+  });
 }
 
 
