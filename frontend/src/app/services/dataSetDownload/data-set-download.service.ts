@@ -46,5 +46,8 @@ export class DataSetDownloadService {
     return this.http.put<DataSetDownload>(`${this.apiUrl}/update/byId/${uuid}`, formData);
   }
 
+  getDataSetCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/count`);
+  }
 
 }

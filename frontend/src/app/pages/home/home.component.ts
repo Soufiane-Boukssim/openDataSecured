@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataSetThemeService } from '../../services/dataSetTheme/data-set-theme.service';
 import { DataProviderOrganisationServiceService } from '../../services/dataProviderOrganisation/data-provider-organisation-service.service';
 import { DataProviderOrganisationMemberService } from '../../services/dataProviderOrganisationMember/data-provider-organisation-member.service';
+import { DataSetDownloadService } from '../../services/dataSetDownload/data-set-download.service';
 
 @Component({
   selector: 'app-home',
@@ -19,12 +20,13 @@ export class HomeComponent implements OnInit {
     { title: 'Jeux de Données', count: 0, bgClass: 'bg-info', icon: 'bi bi-database' }
   ];
 
-  constructor(private themeService: DataSetThemeService, private organisationService: DataProviderOrganisationServiceService, private memberService: DataProviderOrganisationMemberService) {}
+  constructor(private themeService: DataSetThemeService, private organisationService: DataProviderOrganisationServiceService, private memberService: DataProviderOrganisationMemberService, private dataSetService: DataSetDownloadService) {}
 
   ngOnInit(): void {
     this.loadThemeCount();
     this.loadOrganisationCount();
-    this.loadMemberCount(); // ← appel ajouté
+    this.loadMemberCount();
+    this.loadDataSetCount();
   }
 
 
@@ -37,18 +39,25 @@ export class HomeComponent implements OnInit {
 
 
   loadOrganisationCount(): void {
-  this.organisationService.getOrganisationCount().subscribe(
-    count => this.stats[1].count = count, // ← stats[1] correspond à "Organisations Producteurs"
-    error => console.error('Erreur lors du chargement du nombre d\'organisations', error)
-  );
-}
+    this.organisationService.getOrganisationCount().subscribe(
+      count => this.stats[1].count = count, // ← stats[1] correspond à "Organisations Producteurs"
+      error => console.error('Erreur lors du chargement du nombre d\'organisations', error)
+    );
+  }
 
-loadMemberCount(): void {
-  this.memberService.getOrganisationMemberCount().subscribe(
-    count => this.stats[2].count = count, // ← stats[2] correspond aux membres
-    error => console.error('Erreur lors du chargement du nombre de membres', error)
-  );
-}
+  loadMemberCount(): void {
+    this.memberService.getOrganisationMemberCount().subscribe(
+      count => this.stats[2].count = count, // ← stats[2] correspond aux membres
+      error => console.error('Erreur lors du chargement du nombre de membres', error)
+    );
+  }
+
+  loadDataSetCount(): void {
+    this.dataSetService.getDataSetCount().subscribe(
+      count => this.stats[3].count = count,  // 4ème élément dans stats
+      error => console.error('Erreur lors du chargement du nombre de jeux de données', error)
+    );
+  }
 
 
 }
